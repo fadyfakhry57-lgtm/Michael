@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>متابعة الطلاب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#eaf0ee;--surface:#fff;--soft:#f4f8f6;--ink:#15201c;--muted:#5b6a64;--line:#d8e1dd;
+  --accent:#1f6b52;--accent-ink:#fff;--ok:#15805f;--bad:#c23b3b;--warn:#b26700;
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1614;--surface:#16211e;--soft:#1c2a26;--ink:#e5eeeb;--muted:#93a59e;--line:#283a35;
+  --accent:#3fb58b;--accent-ink:#06140f;--ok:#3fc495;--bad:#f07070;--warn:#f0a744;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1614;--surface:#16211e;--soft:#1c2a26;--ink:#e5eeeb;--muted:#93a59e;--line:#283a35;
+  --accent:#3fb58b;--accent-ink:#06140f;--ok:#3fc495;--bad:#f07070;--warn:#f0a744;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;font-size:15px;line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 14px 60px}
+h1{font-size:1.5rem;margin:0}
+h2{font-size:1.1rem;margin:0 0 10px}
+h3{font-size:1rem;margin:0 0 8px}
+.muted{color:var(--muted)}
+.small{font-size:.83rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.grow{flex:1 1 200px}
+button{font:inherit;font-size:.9rem;font-weight:600;border:1px solid var(--line);background:var(--soft);color:var(--ink);padding:9px 14px;border-radius:10px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+button.danger{color:var(--bad)}
+button.icon{padding:6px 9px}
+button:disabled{opacity:.6;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select,textarea{font:inherit;font-size:.92rem;width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink)}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+label.f{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .mark{width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:1.2rem}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:20px}
+.choice{text-align:right;padding:22px;border-radius:16px;background:var(--surface);border:1px solid var(--line);font-size:1rem}
+.choice b{display:block;font-size:1.25rem;margin-bottom:4px}
+.choice span{color:var(--muted);font-weight:400}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat .l{font-size:.82rem;color:var(--muted)}
+.stat .v{font-size:1.55rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.25}
+.stat.good .v{color:var(--ok)} .stat.bad .v{color:var(--bad)}
+.stat.lead{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.stat.lead .l{color:inherit;opacity:.8}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px}
+.tabs button{white-space:nowrap;background:transparent}
+.tabs button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{background:var(--soft);font-weight:600}
+tr:last-child td{border-bottom:none}
+tfoot td{font-weight:700;background:var(--soft)}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft);flex-wrap:wrap}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.76rem;font-weight:600;border:1px solid var(--line);background:var(--surface)}
+.pill.ok{color:var(--ok);border-color:currentColor}
+.pill.bad{color:var(--bad);border-color:currentColor}
+.pos{color:var(--bad);font-weight:600}
+.zero{color:var(--ok)}
+.meter{height:8px;border-radius:4px;background:var(--soft);overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;background:var(--accent)}
+.mbars{display:flex;align-items:flex-end;gap:10px;height:150px}
+.mbar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:.72rem;color:var(--muted)}
+.mbar .stack{width:100%;max-width:46px;display:flex;flex-direction:column;justify-content:flex-end;height:100%;border-radius:6px;overflow:hidden;background:var(--soft);border:1px solid var(--line)}
+.mbar .p{background:var(--accent)}
+.empty{text-align:center;color:var(--muted);padding:22px 10px}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;font-weight:700}
+dialog{border:none;border-radius:16px;padding:0;width:min(560px,94vw);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog form{padding:16px;max-height:86vh;overflow-y:auto}
+.dlg-actions{display:flex;gap:8px;justify-content:flex-start;margin-top:14px;position:sticky;bottom:-16px;background:var(--surface);padding:10px 0}
+.check-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:50;max-width:90vw}
+[hidden]{display:none!important}
+@media print{.noprint{display:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><div class="mark">✎</div><div><h1>متابعة الطلاب</h1><div class="small muted" id="subTitle">حضور، درجات، وحسابات</div></div></div>
+    <div class="row noprint">
+      <button class="icon" id="themeBtn" type="button" aria-label="تبديل الوضع الليلي">🌓</button>
+      <button id="homeBtn" type="button" hidden>الرئيسية</button>
+    </div>
+  </div>
+
+  <section id="v-home">
+    <div class="choices">
+      <button class="choice" type="button" data-go="parent"><b>أنا ولي أمر</b><span>ادخل كود الطالب وشوف الحضور والدرجات والمدفوع.</span></button>
+      <button class="choice" type="button" data-go="teacher"><b>أنا المدرس</b><span>سجّل الطلاب والحصص والحسابات.</span></button>
+    </div>
+  </section>
+
+  <section id="v-parent" hidden>
+    <div class="panel">
+      <h2>متابعة الطالب</h2>
+      <form id="codeForm" class="row">
+        <div class="grow"><input id="codeIn" class="code" placeholder="اكتب كود الطالب" autocomplete="off" required></div>
+        <button class="primary" type="submit">اعرض البيانات</button>
+      </form>
+      <p class="small muted" id="parentMsg" style="margin:8px 0 0">الكود بياخده ولي الأمر من المدرس.</p>
+    </div>
+    <div id="report"></div>
+  </section>
+
+  <section id="v-teacher" hidden>
+    <div id="t-login" class="panel" hidden>
+      <h2>دخول المدرس</h2>
+      <form id="loginForm" class="form-grid">
+        <div><label class="f" for="em">الإيميل</label><input id="em" type="email" required autocomplete="email"></div>
+        <div><label class="f" for="pw">الباسورد</label><input id="pw" type="password" required minlength="6" autocomplete="current-password"></div>
+        <div class="row" style="align-self:end">
+          <button class="primary" type="submit">دخول</button>
+          <button type="button" id="signupBtn">حساب جديد</button>
+        </div>
+      </form>
+      <p class="small muted" id="loginMsg" style="margin:8px 0 0">أول مرة؟ اكتب إيميلك وباسورد واضغط «حساب جديد».</p>
+    </div>
+
+    <div id="t-app" hidden>
+      <div class="row between noprint" style="margin-bottom:10px">
+        <nav class="tabs" id="tabs">
+          <button data-tab="dash" class="on" type="button">الرئيسية</button>
+          <button data-tab="students" type="button">الطلاب</button>
+          <button data-tab="sessions" type="button">الحصص والحضور</button>
+          <button data-tab="exams" type="button">الامتحانات</button>
+          <button data-tab="money" type="button">الحسابات</button>
+        </nav>
+        <button id="logoutBtn" type="button" class="small">خروج</button>
+      </div>
+
+      <div data-pane="dash"></div>
+
+      <div data-pane="students" hidden>
+        <div class="panel">
+          <div class="row">
+            <div class="grow"><input id="stuQ" placeholder="ابحث بالاسم أو الكود أو التليفون"></div>
+            <div style="flex:0 1 180px"><select id="stuG"><option value="">كل المجموعات</option></select></div>
+            <button class="primary" type="button" data-act="newStu">+ طالب جديد</button>
+          </div>
+        </div>
+        <div id="stuTable"></div>
+      </div>
+
+      <div data-pane="sessions" hidden>
+        <div class="panel">
+          <h2>إضافة حصة</h2>
+          <form id="sesForm" class="form-grid">
+            <div><label class="f">المجموعة</label><input name="group_name" list="groupsList" required placeholder="مثلاً: تالتة ثانوي - السبت"></div>
+            <div><label class="f">عنوان الحصة (اختياري)</label><input name="title" placeholder="مثلاً: الباب الأول"></div>
+            <div><label class="f">الميعاد</label><input name="starts_at" type="datetime-local" required></div>
+            <div><label class="f">المدة (دقيقة)</label><input name="duration_min" type="number" min="15" value="90"></div>
+            <div><label class="f">كررها كل أسبوع لمدة</label><select name="repeat"><option value="1">مرة واحدة</option><option value="4">4 أسابيع</option><option value="8">8 أسابيع</option><option value="12">12 أسبوع</option></select></div>
+            <div style="align-self:end"><button class="primary" type="submit">أضف الحصة</button></div>
+          </form>
+        </div>
+        <div class="panel"><h2>الحصص الجاية</h2><div id="sesUp" class="list"></div></div>
+        <div class="panel"><h2>الحصص اللي فاتت</h2><div id="sesPast" class="list"></div></div>
+      </div>
+
+      <div data-pane="exams" hidden>
+        <div class="panel">
+          <h2>إضافة امتحان</h2>
+          <form id="examForm" class="form-grid">
+            <div><label class="f">اسم الامتحان</label><input name="title" required placeholder="مثلاً: امتحان الشهر"></div>
+            <div><label class="f">التاريخ</label><input name="exam_date" type="date" required></div>
+            <div><label class="f">الدرجة النهائية</label><input name="max_score" type="number" min="1" value="100" required></div>
+            <div><label class="f">المجموعة (فاضي = الكل)</label><input name="group_name" list="groupsList"></div>
+            <div style="align-self:end"><button class="primary" type="submit">أضف الامتحان</button></div>
+          </form>
+        </div>
+        <div class="panel"><h2>الامتحانات</h2><div id="examList" class="list"></div></div>
+      </div>
+
+      <div data-pane="money" hidden>
+        <div class="panel row between">
+          <div class="row"><label class="f" for="monthIn" style="margin:0">الشهر</label><input id="monthIn" type="month" style="width:auto"></div>
+          <button class="primary" type="button" data-act="payStu">+ تسجيل دفع</button>
+        </div>
+        <div id="moneyBody"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<datalist id="groupsList"></datalist>
+<datalist id="gradesList">
+  <option value="الصف الأول الإعدادي"><option value="الصف الثاني الإعدادي"><option value="الصف الثالث الإعدادي">
+  <option value="الصف الأول الثانوي"><option value="الصف الثاني الثانوي"><option value="الصف الثالث الثانوي">
+</datalist>
+
+<dialog id="dlg">
+  <form id="dlgForm">
+    <h2 id="dlgTitle"></h2>
+    <div id="dlgBody"></div>
+    <div class="dlg-actions">
+      <button class="primary" type="submit" id="dlgSave">حفظ</button>
+      <button type="button" id="dlgCancel">إلغاء</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(function(){
+const SB_URL = 'https://xlzgormomkhwygsnpbeu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsemdvcm1vbWtod3lnc25wYmV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjEyNDksImV4cCI6MjEwNzkzNzI0OX0.lUXy06ZSsNc8o-9UNz0dMD4tZKvIhG0Fajp42fFm4Ec';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const D = {students:[], sessions:[], attendance:[], payments:[], exams:[], grades:[]};
+let tab = 'dash';
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = n => Number(n || 0).toLocaleString('en-US');
+const money = n => num(n) + ' ج';
+const pad = n => String(n).padStart(2,'0');
+const monthKey = d => d.getFullYear() + '-' + pad(d.getMonth()+1);
+const curMonth = () => monthKey(new Date());
+const LOC = 'ar-EG-u-nu-latn';
+const fmtDT = iso => { const d = new Date(iso); return d.toLocaleDateString(LOC,{weekday:'long',day:'numeric',month:'long'}) + '، ' + d.toLocaleTimeString(LOC,{hour:'numeric',minute:'2-digit'}); };
+const fmtD = d => new Date(d).toLocaleDateString(LOC,{day:'numeric',month:'short',year:'numeric'});
+const monthName = k => { const [y,m] = k.split('-'); return new Date(+y, m-1, 1).toLocaleDateString(LOC,{month:'long',year:'numeric'}); };
+const sameDay = (a,b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+function monthsFrom(startKey, endKey){ const out=[]; let [y,m]=startKey.split('-').map(Number); const [ey,em]=endKey.split('-').map(Number); while(y<ey || (y===ey && m<=em)){ out.push(y+'-'+pad(m)); m++; if(m>12){m=1;y++;} if(out.length>120) break; } return out; }
+const toLocalInput = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+const today = () => { const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); };
+function genCode(){ const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; const r=crypto.getRandomValues(new Uint32Array(6)); r.forEach(x=>s+=a[x%a.length]); return s; }
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), 3200); }
+function check(error){ if(error){ toast(error.code==='23505' ? 'الكود ده مستخدم قبل كده، غيّره.' : 'حصل خطأ: ' + error.message); throw error; } }
+
+$('#themeBtn').onclick = () => {
+  const r = document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme = dark ? 'light' : 'dark';
+  try{ localStorage.setItem('ta-theme', r.dataset.theme); }catch(e){}
+};
+try{ const t = localStorage.getItem('ta-theme'); if(t) document.documentElement.dataset.theme = t; }catch(e){}
+
+function go(v, code){
+  ['home','parent','teacher'].forEach(x => $('#v-'+x).hidden = x!==v);
+  $('#homeBtn').hidden = v==='home';
+  $('#subTitle').textContent = v==='parent' ? 'صفحة ولي الأمر' : v==='teacher' ? 'لوحة المدرس' : 'حضور، درجات، وحسابات';
+  history.replaceState(null,'', v==='home' ? location.pathname : '#'+v+(code?'='+code:''));
+  if(v==='teacher') initTeacher();
+  if(v==='parent' && code){ $('#codeIn').value = code; lookup(code); }
+}
+$$('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+$('#homeBtn').onclick = () => go('home');
+
+const dlg = $('#dlg');
+function openDlg(title, html, onSave, saveText){
+  $('#dlgTitle').textContent = title; $('#dlgBody').innerHTML = html;
+  $('#dlgSave').textContent = saveText || 'حفظ';
+  $('#dlgForm').onsubmit = async e => {
+    e.preventDefault(); const btn = $('#dlgSave'); btn.disabled = true;
+    try{ const ok = await onSave(new FormData(e.target), e.target); if(ok!==false){ dlg.close(); } }
+    catch(err){ console.error(err); }
+    finally{ btn.disabled = false; }
+  };
+  dlg.showModal();
+}
+$('#dlgCancel').onclick = () => dlg.close();
+
+/* =================== ولي الأمر =================== */
+$('#codeForm').onsubmit = e => { e.preventDefault(); lookup($('#codeIn').value); };
+async function lookup(code){
+  code = String(code||'').trim().toUpperCase(); if(!code) return;
+  $('#parentMsg').textContent = 'جاري البحث…'; $('#report').innerHTML = '';
+  const {data, error} = await sb.rpc('get_student_report', {p_code: code});
+  if(error){ $('#parentMsg').textContent = 'حصل خطأ في الاتصال، جرّب تاني.'; return; }
+  if(!data){ $('#parentMsg').textContent = 'الكود ده مش موجود. اتأكد منه مع المدرس.'; return; }
+  $('#parentMsg').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString(LOC,{hour:'numeric',minute:'2-digit'});
+  try{ localStorage.setItem('ta-code', code); }catch(e){}
+  history.replaceState(null,'','#parent='+code);
+  renderReport(data);
+}
+function renderReport(r){
+  const s = r.student, a = r.attendance_summary || {present:0,total:0};
+  const attPct = a.total ? Math.round(a.present/a.total*100) : 0;
+  const months = r.months || [];
+  const now = months.find(m => m.month===curMonth()) || {required:s.monthly_fee, paid:0};
+  const nowRem = Math.max(now.required - now.paid, 0);
+  const allRem = months.reduce((t,m) => t + Math.max(m.required - m.paid, 0), 0);
+  const grades = r.grades || [];
+  const gAvg = grades.length ? Math.round(grades.reduce((t,g)=>t + g.score/g.max_score*100, 0)/grades.length) : null;
+  $('#report').innerHTML = `
+    <div class="panel">
+      <h2 style="font-size:1.35rem;margin-bottom:2px">${esc(s.name)}</h2>
+      <div class="muted small">${esc(s.grade||'')}${s.group_name?' · مجموعة '+esc(s.group_name):''} · الكود <span class="code">${esc(s.code)}</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat lead"><div class="l">الحضور</div><div class="v">${a.present} / ${a.total}</div><div class="small">${a.total ? attPct+'% من الحصص' : 'لسه مفيش حصص متسجلة'}</div></div>
+      <div class="stat"><div class="l">مطلوب الشهر ده</div><div class="v">${money(now.required)}</div></div>
+      <div class="stat good"><div class="l">اتدفع الشهر ده</div><div class="v">${money(now.paid)}</div></div>
+      <div class="stat ${nowRem?'bad':'good'}"><div class="l">باقي الشهر ده</div><div class="v">${money(nowRem)}</div></div>
+      ${allRem>nowRem ? `<div class="stat bad"><div class="l">إجمالي المتأخرات</div><div class="v">${money(allRem)}</div></div>` : ''}
+      ${gAvg!=null ? `<div class="stat"><div class="l">متوسط الدرجات</div><div class="v">${gAvg}%</div></div>` : ''}
+    </div>
+    <div class="panel"><h2>الحصص الجاية</h2>${
+      (r.upcoming||[]).length ? '<div class="list">'+r.upcoming.map(x=>`<div class="item"><span>${fmtDT(x.starts_at)}</span><span class="muted small">${esc(x.title||'')} ${x.duration_min?'· '+x.duration_min+' دقيقة':''}</span></div>`).join('')+'</div>' : '<div class="empty">مفيش حصص جاية متسجلة.</div>'}
+    </div>
+    <div class="panel"><h2>الدرجات</h2>${
+      grades.length ? '<div class="tablewrap"><table><thead><tr><th>الامتحان</th><th>التاريخ</th><th>الدرجة</th><th>النسبة</th></tr></thead><tbody>'+grades.map(g=>`<tr><td>${esc(g.title)}</td><td>${fmtD(g.exam_date)}</td><td>${num(g.score)} / ${num(g.max_score)}</td><td>${Math.round(g.score/g.max_score*100)}%</td></tr>`).join('')+'</tbody></table></div>' : '<div class="empty">مفيش درجات لسه.</div>'}
+    </div>
+    <div class="panel"><h2>الحساب بالشهر</h2>${
+      months.length ? '<div class="tablewrap"><table><thead><tr><th>الشهر</th><th>المطلوب</th><th>المدفوع</th><th>الباقي</th></tr></thead><tbody>'+months.map(m=>{const rem=Math.max(m.required-m.paid,0);return `<tr><td>${monthName(m.month)}</td><td>${money(m.required)}</td><td>${money(m.paid)}</td><td class="${rem?'pos':'zero'}">${money(rem)}</td></tr>`}).join('')+'</tbody></table></div>' : '<div class="empty">مفيش حسابات.</div>'}
+    </div>
+    <div class="panel"><h2>سجل الحضور</h2>${
+      (r.attendance||[]).length ? '<div class="list">'+r.attendance.map(x=>`<div class="item"><span>${fmtDT(x.starts_at)} <span class="muted small">${esc(x.title||'')}</span></span><span class="pill ${x.present?'ok':'bad'}">${x.present?'حضر':'غاب'}</span></div>`).join('')+'</div>' : '<div class="empty">لسه مفيش حضور متسجل.</div>'}
+    </div>`;
+}
+
+/* =================== المدرس =================== */
+async function initTeacher(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(session) showApp(); else { $('#t-login').hidden = false; $('#t-app').hidden = true; }
+}
+$('#loginForm').onsubmit = async e => {
+  e.preventDefault(); $('#loginMsg').textContent = 'جاري الدخول…';
+  const {error} = await sb.auth.signInWithPassword({email:$('#em').value.trim(), password:$('#pw').value});
+  if(error){ $('#loginMsg').textContent = /confirm/i.test(error.message) ? 'لازم تأكد الإيميل الأول من الرسالة اللي وصلتلك.' : 'الإيميل أو الباسورد غلط.'; return; }
+  showApp();
+};
+$('#signupBtn').onclick = async () => {
+  const email = $('#em').value.trim(), password = $('#pw').value;
+  if(!email || password.length < 6){ $('#loginMsg').textContent = 'اكتب إيميل وباسورد 6 حروف على الأقل.'; return; }
+  $('#loginMsg').textContent = 'جاري إنشاء الحساب…';
+  const {data, error} = await sb.auth.signUp({email, password, options:{emailRedirectTo: location.origin + location.pathname + '#teacher'}});
+  if(error){ $('#loginMsg').textContent = 'الحساب ماتعملش: ' + error.message; return; }
+  if(data.session) showApp();
+  else $('#loginMsg').textContent = 'اتعمل الحساب. افتح الإيميل واضغط على لينك التأكيد، وبعدها ادخل.';
+};
+$('#logoutBtn').onclick = async () => { await sb.auth.signOut(); $('#t-app').hidden = true; $('#t-login').hidden = false; };
+
+async function showApp(){
+  $('#t-login').hidden = true; $('#t-app').hidden = false;
+  $('#monthIn').value = $('#monthIn').value || curMonth();
+  $('#examForm').exam_date.value = today();
+  const d = new Date(); d.setMinutes(0,0,0); d.setHours(d.getHours()+1);
+  $('#sesForm').starts_at.value = toLocalInput(d);
+  await loadAll();
+}
+async function loadAll(){
+  const q = t => sb.from(t).select('*');
+  const res = await Promise.all([q('students').order('name'), q('sessions').order('starts_at'), q('attendance'), q('payments').order('paid_at',{ascending:false}), q('exams').order('exam_date',{ascending:false}), q('grades')]);
+  const keys = ['students','sessions','attendance','payments','exams','grades'];
+  for(let i=0;i<res.length;i++){ if(res[i].error){ toast('مقدرتش أحمّل البيانات: '+res[i].error.message); return; } D[keys[i]] = res[i].data; }
+  renderAll();
+}
+
+const active = () => D.students.filter(s => s.active);
+const groups = () => [...new Set(D.students.map(s=>s.group_name).filter(Boolean))].sort();
+const stuById = id => D.students.find(s=>s.id===id);
+const paidFor = (sid, m) => D.payments.filter(p=>p.student_id===sid && p.month===m).reduce((t,p)=>t+ +p.amount, 0);
+const reqFor = (s, m) => (s.active && monthKey(new Date(s.created_at)) <= m) ? +s.monthly_fee : 0;
+const remFor = (s, m) => Math.max(reqFor(s,m) - paidFor(s.id,m), 0);
+const arrears = s => monthsFrom(monthKey(new Date(s.created_at)), curMonth()).reduce((t,m)=>t+remFor(s,m), 0);
+function attOf(sid){ const a = D.attendance.filter(x=>x.student_id===sid); return {p:a.filter(x=>x.present).length, t:a.length}; }
+function sesStats(sid){ const a = D.attendance.filter(x=>x.session_id===sid); return {p:a.filter(x=>x.present).length, t:a.length}; }
+function monthTotals(m){ let req=0, paid=0; for(const s of D.students){ req += reqFor(s,m); } paid = D.payments.filter(p=>p.month===m).reduce((t,p)=>t+ +p.amount,0); return {req, paid, rem:Math.max(req-paid,0)}; }
+
+$('#tabs').onclick = e => { const b = e.target.closest('[data-tab]'); if(!b) return; tab = b.dataset.tab; $$('#tabs button').forEach(x=>x.classList.toggle('on', x===b)); $$('[data-pane]').forEach(p=>p.hidden = p.dataset.pane!==tab); renderAll(); };
+function renderAll(){
+  $('#groupsList').innerHTML = groups().map(g=>`<option value="${esc(g)}">`).join('');
+  const gsel = $('#stuG'), gv = gsel.value; gsel.innerHTML = '<option value="">كل المجموعات</option>' + groups().map(g=>`<option>${esc(g)}</option>`).join(''); gsel.value = gv;
+  renderDash(); renderStudents(); renderSessions(); renderExams(); renderMoney();
+}
+
+function renderDash(){
+  const m = curMonth(), T = monthTotals(m), now = new Date();
+  const todays = D.sessions.filter(s => sameDay(new Date(s.starts_at), now));
+  const next = D.sessions.filter(s => new Date(s.starts_at) > now && !sameDay(new Date(s.starts_at), now)).slice(0,5);
+  const owing = active().map(s=>({s, r:remFor(s,m)})).filter(x=>x.r>0).sort((a,b)=>b.r-a.r).slice(0,8);
+  const pct = T.req ? Math.round(T.paid/T.req*100) : 0;
+  $('[data-pane="dash"]').innerHTML = `
+    <div class="stats">
+      <div class="stat lead"><div class="l">تحصيل ${monthName(m)}</div><div class="v">${money(T.paid)}</div><div class="small">من ${money(T.req)} (${pct}%)</div></div>
+      <div class="stat bad"><div class="l">باقي الشهر</div><div class="v">${money(T.rem)}</div></div>
+      <div class="stat"><div class="l">الطلاب</div><div class="v">${active().length}</div><div class="small muted">${groups().length} مجموعة</div></div>
+      <div class="stat"><div class="l">حصص النهارده</div><div class="v">${todays.length}</div></div>
+    </div>
+    <div class="panel"><h2>حصص النهارده</h2>${todays.length ? '<div class="list">'+todays.map(sesItem).join('')+'</div>' : '<div class="empty">مفيش حصص النهارده.</div>'}</div>
+    <div class="panel"><div class="row between"><h2>لسه مدفعوش الشهر ده</h2><button type="button" class="small" data-tabjump="money">كل الحسابات</button></div>${
+      owing.length ? '<div class="list">'+owing.map(x=>`<div class="item"><span><b>${esc(x.s.name)}</b> <span class="muted small">${esc(x.s.group_name||'')}</span></span><span class="row"><span class="pos">${money(x.r)}</span><button class="icon" type="button" data-act="payStu" data-id="${x.s.id}">💵 دفع</button></span></div>`).join('')+'</div>' : '<div class="empty">كل الطلاب دفعوا الشهر ده 👌</div>'}
+    </div>
+    <div class="panel"><h2>الحصص الجاية</h2>${next.length ? '<div class="list">'+next.map(sesItem).join('')+'</div>' : '<div class="empty">مفيش حصص جاية. ضيف من تبويب الحصص.</div>'}</div>
+    ${!D.students.length ? '<div class="panel empty">ابدأ بإضافة أول طالب من تبويب «الطلاب».</div>' : ''}`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-tabjump]'); if(b) $(`#tabs [data-tab="${b.dataset.tabjump}"]`).click(); });
+
+function renderStudents(){
+  const q = $('#stuQ').value.trim().toLowerCase(), g = $('#stuG').value, m = curMonth();
+  const list = D.students.filter(s => (!g || s.group_name===g) && (!q || [s.name,s.code,s.parent_phone].some(v=>String(v||'').toLowerCase().includes(q))));
+  if(!D.students.length){ $('#stuTable').innerHTML = '<div class="panel empty">مفيش طلاب لسه. اضغط «+ طالب جديد».</div>'; return; }
+  $('#stuTable').innerHTML = `<div class="tablewrap"><table><thead><tr><th>الاسم</th><th>الكود</th><th>السنة</th><th>المجموعة</th><th>الشهرية</th><th>باقي الشهر</th><th>متأخرات</th><th>الحضور</th><th></th></tr></thead><tbody>${
+    list.map(s=>{ const a=attOf(s.id), r=remFor(s,m), ar=arrears(s); return `<tr${s.active?'':' style="opacity:.55"'}>
+      <td><b>${esc(s.name)}</b>${s.active?'':' <span class="pill">موقوف</span>'}</td>
+      <td class="code">${esc(s.code)}</td><td>${esc(s.grade||'')}</td><td>${esc(s.group_name||'')}</td>
+      <td>${money(s.monthly_fee)}</td><td class="${r?'pos':'zero'}">${money(r)}</td><td class="${ar?'pos':'zero'}">${money(ar)}</td>
+      <td>${a.p}/${a.t}</td>
+      <td><span class="row" style="flex-wrap:nowrap;gap:4px">
+        <button class="icon" type="button" title="دفع" data-act="payStu" data-id="${s.id}">💵</button>
+        <button class="icon" type="button" title="ابعت الكود لولي الأمر" data-act="shareStu" data-id="${s.id}">📤</button>
+        <button class="icon" type="button" title="تعديل" data-act="editStu" data-id="${s.id}">✏️</button>
+        <button class="icon danger" type="button" title="حذف" data-act="delStu" data-id="${s.id}">🗑</button></span></td></tr>`; }).join('') || '<tr><td colspan="9" class="empty">مفيش نتايج.</td></tr>'
+  }</tbody></table></div>`;
+}
+$('#stuQ').oninput = renderStudents; $('#stuG').onchange = renderStudents;
+
+function sesItem(s){
+  const st = sesStats(s.id), cnt = active().filter(x=>x.group_name===s.group_name).length;
+  return `<div class="item"><span><b>${esc(s.group_name)}</b> <span class="muted small">${esc(s.title||'')}</span><br><span class="small">${fmtDT(s.starts_at)} · ${s.duration_min} دقيقة</span></span>
+    <span class="row"><span class="small muted">${st.t ? 'حضر '+st.p+' من '+st.t : cnt+' طالب'}</span>
+    <button class="icon" type="button" data-act="att" data-id="${s.id}">✓ الحضور</button>
+    <button class="icon danger" type="button" data-act="delSes" data-id="${s.id}" title="حذف">🗑</button></span></div>`;
+}
+function renderSessions(){
+  const now = new Date();
+  const up = D.sessions.filter(s=>new Date(s.starts_at) >= new Date(now - 3*36e5));
+  const past = D.sessions.filter(s=>new Date(s.starts_at) < new Date(now - 3*36e5)).reverse().slice(0,60);
+  $('#sesUp').innerHTML = up.length ? up.slice(0,40).map(sesItem).join('') : '<div class="empty">مفيش حصص جاية.</div>';
+  $('#sesPast').innerHTML = past.length ? past.map(sesItem).join('') : '<div class="empty">مفيش حصص فاتت.</div>';
+}
+$('#sesForm').onsubmit = async e => {
+  e.preventDefault(); const f = new FormData(e.target), start = new Date(f.get('starts_at')), n = +f.get('repeat') || 1;
+  const rows = Array.from({length:n}, (_,i) => ({group_name:f.get('group_name').trim(), title:f.get('title').trim()||null, duration_min:+f.get('duration_min')||60, starts_at:new Date(start.getTime() + i*7*864e5).toISOString()}));
+  const {error} = await sb.from('sessions').insert(rows); check(error);
+  toast(n>1 ? `اتضافت ${n} حصص` : 'اتضافت الحصة'); e.target.elements.title.value=''; await loadAll();
+};
+
+function renderExams(){
+  $('#examList').innerHTML = D.exams.length ? D.exams.map(x=>{
+    const gs = D.grades.filter(g=>g.exam_id===x.id), avg = gs.length ? Math.round(gs.reduce((t,g)=>t+g.score/x.max_score*100,0)/gs.length) : null;
+    return `<div class="item"><span><b>${esc(x.title)}</b> <span class="muted small">${esc(x.group_name||'كل المجموعات')}</span><br><span class="small">${fmtD(x.exam_date)} · من ${num(x.max_score)}</span></span>
+      <span class="row"><span class="small muted">${gs.length ? gs.length+' طالب · متوسط '+avg+'%' : 'لسه مفيش درجات'}</span>
+      <button class="icon" type="button" data-act="grades" data-id="${x.id}">📝 الدرجات</button>
+      <button class="icon danger" type="button" data-act="delExam" data-id="${x.id}" title="حذف">🗑</button></span></div>`;
+  }).join('') : '<div class="empty">مفيش امتحانات لسه.</div>';
+}
+$('#examForm').onsubmit = async e => {
+  e.preventDefault(); const f = new FormData(e.target);
+  const {error} = await sb.from('exams').insert({title:f.get('title').trim(), exam_date:f.get('exam_date'), max_score:+f.get('max_score'), group_name:f.get('group_name').trim()||null}); check(error);
+  toast('اتضاف الامتحان'); e.target.elements.title.value=''; await loadAll();
+};
+
+function renderMoney(){
+  const m = $('#monthIn').value || curMonth(), T = monthTotals(m);
+  const rows = D.students.filter(s=>reqFor(s,m)>0 || paidFor(s.id,m)>0);
+  const pays = D.payments.filter(p=>p.month===m);
+  const last6 = monthsFrom(monthKey(new Date(new Date().getFullYear(), new Date().getMonth()-5, 1)), curMonth()).map(k=>({k, ...monthTotals(k)}));
+  const max = Math.max(1, ...last6.map(x=>Math.max(x.req,x.paid)));
+  const pct = T.req ? Math.round(T.paid/T.req*100) : 0;
+  $('#moneyBody').innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="l">المطلوب في ${monthName(m)}</div><div class="v">${money(T.req)}</div></div>
+      <div class="stat good"><div class="l">اتحصّل</div><div class="v">${money(T.paid)}</div></div>
+      <div class="stat bad"><div class="l">الباقي</div><div class="v">${money(T.rem)}</div></div>
+      <div class="stat"><div class="l">نسبة التحصيل</div><div class="v">${pct}%</div><div class="meter"><i style="width:${Math.min(pct,100)}%"></i></div></div>
+    </div>
+    <div class="panel"><h2>آخر 6 شهور</h2><div class="mbars">${last6.map(x=>`<div class="mbar" title="${monthName(x.k)}: ${money(x.paid)} من ${money(x.req)}"><span>${num(x.paid)}</span><div class="stack" style="height:${Math.max(x.req,x.paid)/max*100}%"><div class="p" style="height:${x.req?Math.min(x.paid/Math.max(x.req,x.paid)*100,100):100}%"></div></div><span>${x.k.slice(5)}/${x.k.slice(2,4)}</span></div>`).join('')}</div>
+      <p class="small muted" style="margin:8px 0 0">العمود كله = المطلوب، والجزء الملوّن = اللي اتحصّل.</p></div>
+    <div class="panel"><h2>حساب كل طالب</h2>${rows.length ? `<div class="tablewrap"><table><thead><tr><th>الطالب</th><th>المجموعة</th><th>المطلوب</th><th>المدفوع</th><th>الباقي</th><th></th></tr></thead><tbody>${
+      rows.map(s=>{const rq=reqFor(s,m), pd=paidFor(s.id,m), rm=Math.max(rq-pd,0); return `<tr><td>${esc(s.name)}</td><td>${esc(s.group_name||'')}</td><td>${money(rq)}</td><td>${money(pd)}</td><td class="${rm?'pos':'zero'}">${money(rm)}</td><td>${rm?`<button class="icon" type="button" data-act="payStu" data-id="${s.id}">💵 دفع</button>`:'<span class="pill ok">خالص</span>'}</td></tr>`}).join('')
+    }</tbody><tfoot><tr><td colspan="2">الإجمالي</td><td>${money(T.req)}</td><td>${money(T.paid)}</td><td>${money(T.rem)}</td><td></td></tr></tfoot></table></div>` : '<div class="empty">مفيش حسابات للشهر ده.</div>'}</div>
+    <div class="panel"><h2>المدفوعات المسجلة في الشهر</h2>${pays.length ? '<div class="list">'+pays.map(p=>{const s=stuById(p.student_id); return `<div class="item"><span><b>${esc(s?s.name:'—')}</b> <span class="muted small">${fmtD(p.paid_at)}${p.note?' · '+esc(p.note):''}</span></span><span class="row"><b>${money(p.amount)}</b><button class="icon danger" type="button" data-act="delPay" data-id="${p.id}" title="حذف">🗑</button></span></div>`}).join('')+'</div>' : '<div class="empty">مفيش مدفوعات متسجلة.</div>'}</div>`;
+}
+$('#monthIn').onchange = renderMoney;
+
+const ACT = {
+  newStu: () => stuForm(null),
+  editStu: id => stuForm(stuById(id)),
+  async delStu(id){ const s=stuById(id); if(!confirm(`حذف ${s.name}؟ هيتمسح حضوره ودرجاته ومدفوعاته كمان.`)) return; check((await sb.from('students').delete().eq('id',id)).error); toast('اتحذف الطالب'); await loadAll(); },
+  shareStu(id){
+    const s = stuById(id), link = location.origin + location.pathname + '#parent=' + s.code;
+    const msg = `أهلاً، ده كود متابعة ${s.name}: ${s.code}\nتقدر تشوف الحضور والدرجات والحساب من هنا:\n${link}`;
+    let phone = String(s.parent_phone||'').replace(/\D/g,''); if(phone.startsWith('0')) phone = '2'+phone;
+    if(phone) window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg), '_blank');
+    else navigator.clipboard?.writeText(msg).then(()=>toast('اتنسخت الرسالة، ابعتها لولي الأمر'), ()=>prompt('انسخ الرسالة:', msg));
+  },
+  payStu(id){
+    const m = $('#monthIn').value || curMonth(), s = id ? stuById(id) : null;
+    const opts = active().map(x=>`<option value="${x.id}" ${s&&s.id===x.id?'selected':''}>${esc(x.name)}${x.group_name?' - '+esc(x.group_name):''}</option>`).join('');
+    const def = s ? (remFor(s,m) || s.monthly_fee) : '';
+    openDlg('تسجيل دفع', `<div class="form-grid">
+      <div style="grid-column:1/-1"><label class="f">الطالب</label><select name="student_id" required><option value="">اختار</option>${opts}</select></div>
+      <div><label class="f">المبلغ</label><input name="amount" type="number" min="1" step="any" value="${def}" required></div>
+      <div><label class="f">عن شهر</label><input name="month" type="month" value="${m}" required></div>
+      <div><label class="f">تاريخ الدفع</label><input name="paid_at" type="date" value="${today()}" required></div>
+      <div><label class="f">ملاحظة</label><input name="note"></div></div>`,
+      async f => { check((await sb.from('payments').insert({student_id:f.get('student_id'), amount:+f.get('amount'), month:f.get('month'), paid_at:f.get('paid_at'), note:f.get('note').trim()||null})).error); toast('اتسجل الدفع'); await loadAll(); });
+  },
+  async delPay(id){ if(!confirm('حذف الدفعة دي؟')) return; check((await sb.from('payments').delete().eq('id',id)).error); await loadAll(); },
+  att(id){
+    const ses = D.sessions.find(s=>s.id===id);
+    const list = active().filter(s=>s.group_name===ses.group_name);
+    const extra = D.attendance.filter(a=>a.session_id===id && !list.some(s=>s.id===a.student_id)).map(a=>stuById(a.student_id)).filter(Boolean);
+    const all = [...list, ...extra];
+    if(!all.length){ toast('مفيش طلاب في مجموعة «'+ses.group_name+'». اكتب نفس اسم المجموعة في بيانات الطالب.'); return; }
+    const rec = sid => D.attendance.find(a=>a.session_id===id && a.student_id===sid);
+    openDlg('حضور ' + ses.group_name, `<p class="small muted" style="margin-top:0">${fmtDT(ses.starts_at)}</p>
+      <div class="row" style="margin-bottom:6px"><button type="button" class="small" id="allIn">الكل حاضر</button><button type="button" class="small" id="allOut">الكل غايب</button></div>
+      ${all.map(s=>{const r=rec(s.id); return `<label class="check-row"><span>${esc(s.name)}</span><input type="checkbox" name="p_${s.id}" ${!r||r.present?'checked':''}></label>`}).join('')}`,
+      async (f, form) => {
+        const rows = all.map(s=>({session_id:id, student_id:s.id, present:!!form['p_'+s.id].checked}));
+        check((await sb.from('attendance').upsert(rows, {onConflict:'session_id,student_id'})).error); toast('اتسجل الحضور'); await loadAll();
+      }, 'حفظ الحضور');
+    $('#allIn').onclick = () => $$('#dlgBody input[type=checkbox]').forEach(c=>c.checked=true);
+    $('#allOut').onclick = () => $$('#dlgBody input[type=checkbox]').forEach(c=>c.checked=false);
+  },
+  async delSes(id){ if(!confirm('حذف الحصة دي وحضورها؟')) return; check((await sb.from('sessions').delete().eq('id',id)).error); await loadAll(); },
+  grades(id){
+    const ex = D.exams.find(x=>x.id===id);
+    const list = active().filter(s=>!ex.group_name || s.group_name===ex.group_name);
+    if(!list.length){ toast('مفيش طلاب للامتحان ده.'); return; }
+    const cur = sid => D.grades.find(g=>g.exam_id===id && g.student_id===sid);
+    openDlg('درجات ' + ex.title, `<p class="small muted" style="margin-top:0">من ${num(ex.max_score)} · سيب الخانة فاضية لو الطالب ماامتحنش</p>
+      ${list.map(s=>{const g=cur(s.id); return `<label class="check-row"><span>${esc(s.name)}</span><input name="g_${s.id}" type="number" min="0" max="${ex.max_score}" step="any" style="width:110px" value="${g?g.score:''}"></label>`}).join('')}`,
+      async f => {
+        const up = [], del = [];
+        list.forEach(s=>{ const v = String(f.get('g_'+s.id)||'').trim(); if(v!=='') up.push({exam_id:id, student_id:s.id, score:+v}); else if(cur(s.id)) del.push(cur(s.id).id); });
+        if(up.length) check((await sb.from('grades').upsert(up, {onConflict:'exam_id,student_id'})).error);
+        if(del.length) check((await sb.from('grades').delete().in('id', del)).error);
+        toast('اتسجلت الدرجات'); await loadAll();
+      }, 'حفظ الدرجات');
+  },
+  async delExam(id){ if(!confirm('حذف الامتحان ودرجاته؟')) return; check((await sb.from('exams').delete().eq('id',id)).error); await loadAll(); }
+};
+document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if(b && ACT[b.dataset.act]) ACT[b.dataset.act](b.dataset.id); });
+
+function stuForm(s){
+  openDlg(s ? 'تعديل بيانات الطالب' : 'طالب جديد', `<div class="form-grid">
+    <div style="grid-column:1/-1"><label class="f">اسم الطالب</label><input name="name" required value="${esc(s?.name)}"></div>
+    <div><label class="f">كود الطالب</label><div class="row" style="flex-wrap:nowrap"><input name="code" class="code" required value="${esc(s?.code || genCode())}"><button type="button" class="icon" id="regen" title="كود جديد">↻</button></div></div>
+    <div><label class="f">السنة الدراسية</label><input name="grade" list="gradesList" value="${esc(s?.grade)}"></div>
+    <div><label class="f">المجموعة</label><input name="group_name" list="groupsList" value="${esc(s?.group_name)}" placeholder="مثلاً: تالتة ثانوي - السبت"></div>
+    <div><label class="f">تليفون ولي الأمر</label><input name="parent_phone" type="tel" value="${esc(s?.parent_phone)}" placeholder="01xxxxxxxxx"></div>
+    <div><label class="f">الشهرية (جنيه)</label><input name="monthly_fee" type="number" min="0" step="any" value="${s ? s.monthly_fee : ''}" required></div>
+    <div style="grid-column:1/-1"><label class="f">ملاحظات</label><textarea name="notes" rows="2">${esc(s?.notes)}</textarea></div>
+    ${s ? `<label class="check-row" style="grid-column:1/-1"><span>الطالب لسه بيحضر (لو شلت العلامة مش هيتحسب عليه شهرية)</span><input type="checkbox" name="active" ${s.active?'checked':''}></label>` : ''}
+  </div>`, async (f, form) => {
+    const obj = {name:f.get('name').trim(), code:f.get('code').trim().toUpperCase(), grade:f.get('grade').trim()||null, group_name:f.get('group_name').trim()||null, parent_phone:f.get('parent_phone').trim()||null, monthly_fee:+f.get('monthly_fee')||0, notes:f.get('notes').trim()||null};
+    if(s) obj.active = !!form.active.checked;
+    const {error} = s ? await sb.from('students').update(obj).eq('id', s.id) : await sb.from('students').insert(obj);
+    check(error); toast(s ? 'اتحفظت التعديلات' : 'اتضاف الطالب'); await loadAll();
+  });
+  $('#regen').onclick = () => { $('#dlgForm').code.value = genCode(); };
+}
+
+const h = location.hash.slice(1);
+if(h.startsWith('parent')) go('parent', decodeURIComponent(h.split('=')[1]||''));
+else if(h.startsWith('teacher') || /access_token|type=signup/.test(h)) go('teacher');
+else {
+  let saved=''; try{ saved = localStorage.getItem('ta-code')||''; }catch(e){}
+  go('home');
+  if(saved) $('#codeIn').value = saved;
+}
+sb.auth.onAuthStateChange((ev) => { if(ev==='SIGNED_IN' && !$('#v-teacher').hidden && $('#t-app').hidden) showApp(); });
+})();
+</script>
+</body>
+</html>
