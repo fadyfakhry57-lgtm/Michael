@@ -1,4 +1,4 @@
- <!doctype html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -118,18 +118,18 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
   <section id="v-register" hidden>
     <div class="panel" id="regPanel">
       <h2>تسجيل طالب جديد</h2>
-      <p class="small muted" style="margin-top:0">املا كل البيانات. زرار الحفظ هيشتغل لما كل الخانات تكون مكتوبة صح.</p>
-      <form id="regForm" class="form-grid">
+      <p class="small muted" style="margin-top:0">املا كل البيانات، وبعد الحفظ هيظهرلك كود الطالب.</p>
+      <form id="regForm" class="form-grid" novalidate>
         <div style="grid-column:1/-1"><label class="f" for="r_name">اسم الطالب (ثلاثي)</label><input id="r_name" name="name" required minlength="5" maxlength="100"></div>
         <div><label class="f" for="r_grade">السنة الدراسية</label><select id="r_grade" name="grade" required><option value="">اختار السنة</option>
           <option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option>
           <option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select></div>
         <div><label class="f" for="r_pname">اسم ولي الأمر</label><input id="r_pname" name="parent_name" required minlength="3" maxlength="100"></div>
-        <div><label class="f" for="r_pphone">موبايل ولي الأمر</label><input id="r_pphone" name="parent_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" maxlength="11" placeholder="01xxxxxxxxx" title="رقم موبايل 11 رقم يبدأ بـ 01"></div>
-        <div><label class="f" for="r_sphone">موبايل الطالب</label><input id="r_sphone" name="student_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" maxlength="11" placeholder="01xxxxxxxxx" title="رقم موبايل 11 رقم يبدأ بـ 01"></div>
-        <div style="grid-column:1/-1"><button class="primary" type="submit" id="regBtn" disabled style="width:100%">حفظ</button></div>
+        <div><label class="f" for="r_pphone">موبايل ولي الأمر</label><input id="r_pphone" name="parent_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" placeholder="01xxxxxxxxx"></div>
+        <div><label class="f" for="r_sphone">موبايل الطالب</label><input id="r_sphone" name="student_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" placeholder="01xxxxxxxxx"></div>
+        <div style="grid-column:1/-1"><button class="primary" type="submit" id="regBtn" style="width:100%">حفظ</button></div>
       </form>
-      <p class="small muted" id="regMsg" style="margin:8px 0 0"></p>
+      <p class="small" id="regMsg" style="margin:8px 0 0;color:var(--bad)"></p>
     </div>
     <div class="panel" id="regDone" hidden>
       <h2>اتسجل الطالب بنجاح</h2>
@@ -329,32 +329,40 @@ $('#dlgCancel').onclick = () => dlg.close();
 
 /* =================== إضافة طالب (ولي الأمر) =================== */
 const regForm = $('#regForm');
-regForm.addEventListener('input', () => {
-  regForm.parent_phone.value = regForm.parent_phone.value.replace(/\D/g,'');
-  regForm.student_phone.value = regForm.student_phone.value.replace(/\D/g,'');
-  $('#regBtn').disabled = !regForm.checkValidity();
+const REG_FIELDS = {name:'اسم الطالب (ثلاثي)', grade:'السنة الدراسية', parent_name:'اسم ولي الأمر', parent_phone:'موبايل ولي الأمر', student_phone:'موبايل الطالب'};
+const field = n => regForm.elements[n];
+const toLatin = s => String(s||'').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+const cleanPhone = el => { el.value = toLatin(el.value).replace(/\D/g,'').slice(0,11); };
+regForm.addEventListener('input', e => {
+  if(e.target.type === 'tel') cleanPhone(e.target);
+  $('#regMsg').textContent = '';
 });
-regForm.addEventListener('change', () => { $('#regBtn').disabled = !regForm.checkValidity(); });
 regForm.onsubmit = async e => {
   e.preventDefault();
-  if(!regForm.checkValidity()){ regForm.reportValidity(); return; }
-  const f = new FormData(regForm), btn = $('#regBtn');
+  cleanPhone(field('parent_phone')); cleanPhone(field('student_phone'));
+  const bad = Object.keys(REG_FIELDS).filter(n => !field(n).value.trim() || !field(n).checkValidity());
+  if(bad.length){
+    $('#regMsg').textContent = 'كمّل البيانات دي: ' + bad.map(n => REG_FIELDS[n]).join('، ') + (bad.some(n => n.includes('phone')) ? ' (الموبايل 11 رقم ويبدأ بـ 01)' : '');
+    field(bad[0]).focus();
+    return;
+  }
+  const btn = $('#regBtn');
   btn.disabled = true; $('#regMsg').textContent = 'جاري الحفظ…';
   const {data, error} = await sb.rpc('register_student', {
-    p_name: f.get('name'), p_grade: f.get('grade'), p_parent_name: f.get('parent_name'),
-    p_parent_phone: f.get('parent_phone'), p_student_phone: f.get('student_phone')
+    p_name: field('name').value.trim(), p_grade: field('grade').value, p_parent_name: field('parent_name').value.trim(),
+    p_parent_phone: field('parent_phone').value, p_student_phone: field('student_phone').value
   });
   btn.disabled = false;
   if(error){ $('#regMsg').textContent = /phone/.test(error.message) ? 'رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.' : 'البيانات ماتحفظتش، راجعها وجرّب تاني.'; return; }
   $('#regMsg').textContent = '';
-  $('#regName').textContent = f.get('name').trim();
+  $('#regName').textContent = field('name').value.trim();
   $('#regCode').textContent = data;
   $('#regPanel').hidden = true; $('#regDone').hidden = false;
   try{ localStorage.setItem('ta-code', data); }catch(e){}
 };
 $('#copyCode').onclick = () => copy($('#regCode').textContent);
 $('#openParent').onclick = () => go('parent', $('#regCode').textContent);
-$('#regAgain').onclick = () => { regForm.reset(); $('#regBtn').disabled = true; $('#regDone').hidden = true; $('#regPanel').hidden = false; };
+$('#regAgain').onclick = () => { regForm.reset(); $('#regMsg').textContent = ''; $('#regDone').hidden = true; $('#regPanel').hidden = false; };
 
 /* =================== ولي الأمر =================== */
 $('#codeForm').onsubmit = e => { e.preventDefault(); lookup($('#codeIn').value); };
