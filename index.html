@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -80,6 +80,10 @@ tfoot td{font-weight:700;background:var(--soft)}
 .mbar .stack{width:100%;max-width:46px;display:flex;flex-direction:column;justify-content:flex-end;height:100%;border-radius:6px;overflow:hidden;background:var(--soft);border:1px solid var(--line)}
 .mbar .p{background:var(--accent)}
 .empty{text-align:center;color:var(--muted);padding:22px 10px}
+.bell{position:relative;font-size:1.1rem}
+.badge{position:absolute;top:-7px;left:-7px;background:var(--bad);color:#fff;border-radius:999px;font-size:.7rem;min-width:19px;height:19px;display:grid;place-items:center;padding:0 5px}
+.codebox{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:2.3rem;font-weight:700;letter-spacing:.15em;text-align:center;padding:16px;border:2px dashed var(--accent);border-radius:14px;margin:12px 0;color:var(--accent)}
+.pend{width:100%;text-align:right;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .code{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;font-weight:700}
 dialog{border:none;border-radius:16px;padding:0;width:min(560px,94vw);background:var(--surface);color:var(--ink)}
 dialog::backdrop{background:rgba(0,0,0,.45)}
@@ -101,13 +105,46 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
     </div>
   </div>
 
+  <!-- HOME -->
   <section id="v-home">
     <div class="choices">
-      <button class="choice" type="button" data-go="parent"><b>أنا ولي أمر</b><span>ادخل كود الطالب وشوف الحضور والدرجات والمدفوع.</span></button>
-      <button class="choice" type="button" data-go="teacher"><b>أنا المدرس</b><span>سجّل الطلاب والحصص والحسابات.</span></button>
+      <button class="choice" type="button" data-go="teacher"><b dir="ltr" style="text-align:right">Mr.Michael Fakhry</b><span>دخول المدرس</span></button>
+      <button class="choice" type="button" data-go="parent"><b>ولي الأمر</b><span>متابعة الطالب بالكود: الحضور والدرجات والحساب.</span></button>
+      <button class="choice" type="button" data-go="register"><b>إضافة طالب</b><span>سجّل بيانات طالب جديد وخد الكود بتاعه.</span></button>
     </div>
   </section>
 
+  <!-- REGISTER -->
+  <section id="v-register" hidden>
+    <div class="panel" id="regPanel">
+      <h2>تسجيل طالب جديد</h2>
+      <p class="small muted" style="margin-top:0">املا كل البيانات. زرار الحفظ هيشتغل لما كل الخانات تكون مكتوبة صح.</p>
+      <form id="regForm" class="form-grid">
+        <div style="grid-column:1/-1"><label class="f" for="r_name">اسم الطالب (ثلاثي)</label><input id="r_name" name="name" required minlength="5" maxlength="100"></div>
+        <div><label class="f" for="r_grade">السنة الدراسية</label><select id="r_grade" name="grade" required><option value="">اختار السنة</option>
+          <option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option>
+          <option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select></div>
+        <div><label class="f" for="r_pname">اسم ولي الأمر</label><input id="r_pname" name="parent_name" required minlength="3" maxlength="100"></div>
+        <div><label class="f" for="r_pphone">موبايل ولي الأمر</label><input id="r_pphone" name="parent_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" maxlength="11" placeholder="01xxxxxxxxx" title="رقم موبايل 11 رقم يبدأ بـ 01"></div>
+        <div><label class="f" for="r_sphone">موبايل الطالب</label><input id="r_sphone" name="student_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" maxlength="11" placeholder="01xxxxxxxxx" title="رقم موبايل 11 رقم يبدأ بـ 01"></div>
+        <div style="grid-column:1/-1"><button class="primary" type="submit" id="regBtn" disabled style="width:100%">حفظ</button></div>
+      </form>
+      <p class="small muted" id="regMsg" style="margin:8px 0 0"></p>
+    </div>
+    <div class="panel" id="regDone" hidden>
+      <h2>اتسجل الطالب بنجاح</h2>
+      <p style="margin:0">ده كود <b id="regName"></b>. احتفظ بيه، هتدخل بيه بعد كده على صفحة ولي الأمر:</p>
+      <div class="codebox" id="regCode"></div>
+      <p class="small muted">المدرس هيأكد التسجيل ويحدد ميعاد الحصة، وبعدها هتلاقي كل البيانات بالكود ده.</p>
+      <div class="row">
+        <button class="primary" type="button" id="copyCode">انسخ الكود</button>
+        <button type="button" id="openParent">افتح صفحة ولي الأمر</button>
+        <button type="button" id="regAgain">سجّل طالب تاني</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARENT -->
   <section id="v-parent" hidden>
     <div class="panel">
       <h2>متابعة الطالب</h2>
@@ -120,18 +157,16 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
     <div id="report"></div>
   </section>
 
+  <!-- TEACHER -->
   <section id="v-teacher" hidden>
     <div id="t-login" class="panel" hidden>
-      <h2>دخول المدرس</h2>
+      <h2 dir="ltr" style="text-align:right">Mr.Michael Fakhry</h2>
       <form id="loginForm" class="form-grid">
-        <div><label class="f" for="em">الإيميل</label><input id="em" type="email" required autocomplete="email"></div>
-        <div><label class="f" for="pw">الباسورد</label><input id="pw" type="password" required minlength="6" autocomplete="current-password"></div>
-        <div class="row" style="align-self:end">
-          <button class="primary" type="submit">دخول</button>
-          <button type="button" id="signupBtn">حساب جديد</button>
-        </div>
+        <div><label class="f" for="un">اسم المستخدم</label><input id="un" required autocomplete="username" autocapitalize="none" dir="ltr"></div>
+        <div><label class="f" for="pw">الباسورد</label><input id="pw" type="password" required autocomplete="current-password" dir="ltr"></div>
+        <div style="align-self:end"><button class="primary" type="submit">دخول</button></div>
       </form>
-      <p class="small muted" id="loginMsg" style="margin:8px 0 0">أول مرة؟ اكتب إيميلك وباسورد واضغط «حساب جديد».</p>
+      <p class="small muted" id="loginMsg" style="margin:8px 0 0"></p>
     </div>
 
     <div id="t-app" hidden>
@@ -143,7 +178,10 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
           <button data-tab="exams" type="button">الامتحانات</button>
           <button data-tab="money" type="button">الحسابات</button>
         </nav>
-        <button id="logoutBtn" type="button" class="small">خروج</button>
+        <div class="row" style="gap:8px">
+          <button id="bellBtn" class="icon bell" type="button" aria-label="طلاب جداد">🔔<span class="badge" id="bellCount" hidden>0</span></button>
+          <button id="logoutBtn" type="button" class="small">خروج</button>
+        </div>
       </div>
 
       <div data-pane="dash"></div>
@@ -152,7 +190,7 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
         <div class="panel">
           <div class="row">
             <div class="grow"><input id="stuQ" placeholder="ابحث بالاسم أو الكود أو التليفون"></div>
-            <div style="flex:0 1 180px"><select id="stuG"><option value="">كل المجموعات</option></select></div>
+            <div style="flex:0 1 180px"><select id="stuG"><option value="">كل المواعيد</option></select></div>
             <button class="primary" type="button" data-act="newStu">+ طالب جديد</button>
           </div>
         </div>
@@ -163,7 +201,7 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
         <div class="panel">
           <h2>إضافة حصة</h2>
           <form id="sesForm" class="form-grid">
-            <div><label class="f">المجموعة</label><input name="group_name" list="groupsList" required placeholder="مثلاً: تالتة ثانوي - السبت"></div>
+            <div><label class="f">ميعاد الحصة (المجموعة)</label><input name="group_name" list="groupsList" required placeholder="مثلاً: السبت والثلاثاء 4 العصر"></div>
             <div><label class="f">عنوان الحصة (اختياري)</label><input name="title" placeholder="مثلاً: الباب الأول"></div>
             <div><label class="f">الميعاد</label><input name="starts_at" type="datetime-local" required></div>
             <div><label class="f">المدة (دقيقة)</label><input name="duration_min" type="number" min="15" value="90"></div>
@@ -182,7 +220,7 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
             <div><label class="f">اسم الامتحان</label><input name="title" required placeholder="مثلاً: امتحان الشهر"></div>
             <div><label class="f">التاريخ</label><input name="exam_date" type="date" required></div>
             <div><label class="f">الدرجة النهائية</label><input name="max_score" type="number" min="1" value="100" required></div>
-            <div><label class="f">المجموعة (فاضي = الكل)</label><input name="group_name" list="groupsList"></div>
+            <div><label class="f">ميعاد الحصة (فاضي = الكل)</label><input name="group_name" list="groupsList"></div>
             <div style="align-self:end"><button class="primary" type="submit">أضف الامتحان</button></div>
           </form>
         </div>
@@ -221,12 +259,13 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
 (function(){
 const SB_URL = 'https://xlzgormomkhwygsnpbeu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsemdvcm1vbWtod3lnc25wYmV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjEyNDksImV4cCI6MjEwNzkzNzI0OX0.lUXy06ZSsNc8o-9UNz0dMD4tZKvIhG0Fajp42fFm4Ec';
+const LOGIN_DOMAIN = '@mrmichael.app';
 const sb = supabase.createClient(SB_URL, SB_KEY);
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const D = {students:[], sessions:[], attendance:[], payments:[], exams:[], grades:[]};
-let tab = 'dash';
+let sesMap = {}, tab = 'dash', refreshTimer = null;
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num = n => Number(n || 0).toLocaleString('en-US');
@@ -245,6 +284,7 @@ const today = () => { const d=new Date(); return d.getFullYear()+'-'+pad(d.getMo
 function genCode(){ const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; const r=crypto.getRandomValues(new Uint32Array(6)); r.forEach(x=>s+=a[x%a.length]); return s; }
 function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), 3200); }
 function check(error){ if(error){ toast(error.code==='23505' ? 'الكود ده مستخدم قبل كده، غيّره.' : 'حصل خطأ: ' + error.message); throw error; } }
+function copy(text){ (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(()=>toast('اتنسخ'), ()=>prompt('انسخ:', text)); }
 
 $('#themeBtn').onclick = () => {
   const r = document.documentElement;
@@ -254,23 +294,31 @@ $('#themeBtn').onclick = () => {
 };
 try{ const t = localStorage.getItem('ta-theme'); if(t) document.documentElement.dataset.theme = t; }catch(e){}
 
+/* ---------- التنقل ---------- */
+const TITLES = {home:'حضور، درجات، وحسابات', parent:'صفحة ولي الأمر', teacher:'لوحة المدرس', register:'تسجيل طالب جديد'};
 function go(v, code){
-  ['home','parent','teacher'].forEach(x => $('#v-'+x).hidden = x!==v);
+  ['home','parent','teacher','register'].forEach(x => $('#v-'+x).hidden = x!==v);
   $('#homeBtn').hidden = v==='home';
-  $('#subTitle').textContent = v==='parent' ? 'صفحة ولي الأمر' : v==='teacher' ? 'لوحة المدرس' : 'حضور، درجات، وحسابات';
+  $('#subTitle').textContent = TITLES[v];
   history.replaceState(null,'', v==='home' ? location.pathname : '#'+v+(code?'='+code:''));
   if(v==='teacher') initTeacher();
   if(v==='parent' && code){ $('#codeIn').value = code; lookup(code); }
+  scrollTo(0,0);
 }
 $$('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
 $('#homeBtn').onclick = () => go('home');
 
+/* ---------- النوافذ ---------- */
 const dlg = $('#dlg');
 function openDlg(title, html, onSave, saveText){
+  if(dlg.open) dlg.close();
   $('#dlgTitle').textContent = title; $('#dlgBody').innerHTML = html;
+  $('#dlgSave').hidden = !onSave;
   $('#dlgSave').textContent = saveText || 'حفظ';
+  $('#dlgCancel').textContent = onSave ? 'إلغاء' : 'إغلاق';
   $('#dlgForm').onsubmit = async e => {
-    e.preventDefault(); const btn = $('#dlgSave'); btn.disabled = true;
+    e.preventDefault(); if(!onSave) return;
+    const btn = $('#dlgSave'); btn.disabled = true;
     try{ const ok = await onSave(new FormData(e.target), e.target); if(ok!==false){ dlg.close(); } }
     catch(err){ console.error(err); }
     finally{ btn.disabled = false; }
@@ -278,6 +326,35 @@ function openDlg(title, html, onSave, saveText){
   dlg.showModal();
 }
 $('#dlgCancel').onclick = () => dlg.close();
+
+/* =================== إضافة طالب (ولي الأمر) =================== */
+const regForm = $('#regForm');
+regForm.addEventListener('input', () => {
+  regForm.parent_phone.value = regForm.parent_phone.value.replace(/\D/g,'');
+  regForm.student_phone.value = regForm.student_phone.value.replace(/\D/g,'');
+  $('#regBtn').disabled = !regForm.checkValidity();
+});
+regForm.addEventListener('change', () => { $('#regBtn').disabled = !regForm.checkValidity(); });
+regForm.onsubmit = async e => {
+  e.preventDefault();
+  if(!regForm.checkValidity()){ regForm.reportValidity(); return; }
+  const f = new FormData(regForm), btn = $('#regBtn');
+  btn.disabled = true; $('#regMsg').textContent = 'جاري الحفظ…';
+  const {data, error} = await sb.rpc('register_student', {
+    p_name: f.get('name'), p_grade: f.get('grade'), p_parent_name: f.get('parent_name'),
+    p_parent_phone: f.get('parent_phone'), p_student_phone: f.get('student_phone')
+  });
+  btn.disabled = false;
+  if(error){ $('#regMsg').textContent = /phone/.test(error.message) ? 'رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.' : 'البيانات ماتحفظتش، راجعها وجرّب تاني.'; return; }
+  $('#regMsg').textContent = '';
+  $('#regName').textContent = f.get('name').trim();
+  $('#regCode').textContent = data;
+  $('#regPanel').hidden = true; $('#regDone').hidden = false;
+  try{ localStorage.setItem('ta-code', data); }catch(e){}
+};
+$('#copyCode').onclick = () => copy($('#regCode').textContent);
+$('#openParent').onclick = () => go('parent', $('#regCode').textContent);
+$('#regAgain').onclick = () => { regForm.reset(); $('#regBtn').disabled = true; $('#regDone').hidden = true; $('#regPanel').hidden = false; };
 
 /* =================== ولي الأمر =================== */
 $('#codeForm').onsubmit = e => { e.preventDefault(); lookup($('#codeIn').value); };
@@ -293,10 +370,15 @@ async function lookup(code){
   renderReport(data);
 }
 function renderReport(r){
-  const s = r.student, a = r.attendance_summary || {present:0,total:0};
+  const s = r.student;
+  if(r.pending){
+    $('#report').innerHTML = `<div class="panel"><h2>${esc(s.name)}</h2><p style="margin:0">التسجيل وصل للمدرس، ومستني يأكده ويحدد ميعاد الحصة. ارجع للصفحة دي بعد شوية بنفس الكود <span class="code">${esc(s.code)}</span>.</p></div>`;
+    return;
+  }
+  const a = r.attendance_summary || {present:0,total:0};
   const attPct = a.total ? Math.round(a.present/a.total*100) : 0;
   const months = r.months || [];
-  const now = months.find(m => m.month===curMonth()) || {required:s.monthly_fee, paid:0};
+  const now = months.find(m => m.month===curMonth()) || {required:0, paid:0, sessions:0};
   const nowRem = Math.max(now.required - now.paid, 0);
   const allRem = months.reduce((t,m) => t + Math.max(m.required - m.paid, 0), 0);
   const grades = r.grades || [];
@@ -304,11 +386,12 @@ function renderReport(r){
   $('#report').innerHTML = `
     <div class="panel">
       <h2 style="font-size:1.35rem;margin-bottom:2px">${esc(s.name)}</h2>
-      <div class="muted small">${esc(s.grade||'')}${s.group_name?' · مجموعة '+esc(s.group_name):''} · الكود <span class="code">${esc(s.code)}</span></div>
+      <div class="muted small">${esc(s.grade||'')}${s.group_name?' · ميعاد الحصة: '+esc(s.group_name):''} · الكود <span class="code">${esc(s.code)}</span></div>
     </div>
     <div class="stats">
       <div class="stat lead"><div class="l">الحضور</div><div class="v">${a.present} / ${a.total}</div><div class="small">${a.total ? attPct+'% من الحصص' : 'لسه مفيش حصص متسجلة'}</div></div>
-      <div class="stat"><div class="l">مطلوب الشهر ده</div><div class="v">${money(now.required)}</div></div>
+      <div class="stat"><div class="l">سعر الحصة</div><div class="v">${money(s.session_price)}</div></div>
+      <div class="stat"><div class="l">حصص الشهر ده</div><div class="v">${now.sessions||0}</div><div class="small muted">المطلوب ${money(now.required)}</div></div>
       <div class="stat good"><div class="l">اتدفع الشهر ده</div><div class="v">${money(now.paid)}</div></div>
       <div class="stat ${nowRem?'bad':'good'}"><div class="l">باقي الشهر ده</div><div class="v">${money(nowRem)}</div></div>
       ${allRem>nowRem ? `<div class="stat bad"><div class="l">إجمالي المتأخرات</div><div class="v">${money(allRem)}</div></div>` : ''}
@@ -321,7 +404,7 @@ function renderReport(r){
       grades.length ? '<div class="tablewrap"><table><thead><tr><th>الامتحان</th><th>التاريخ</th><th>الدرجة</th><th>النسبة</th></tr></thead><tbody>'+grades.map(g=>`<tr><td>${esc(g.title)}</td><td>${fmtD(g.exam_date)}</td><td>${num(g.score)} / ${num(g.max_score)}</td><td>${Math.round(g.score/g.max_score*100)}%</td></tr>`).join('')+'</tbody></table></div>' : '<div class="empty">مفيش درجات لسه.</div>'}
     </div>
     <div class="panel"><h2>الحساب بالشهر</h2>${
-      months.length ? '<div class="tablewrap"><table><thead><tr><th>الشهر</th><th>المطلوب</th><th>المدفوع</th><th>الباقي</th></tr></thead><tbody>'+months.map(m=>{const rem=Math.max(m.required-m.paid,0);return `<tr><td>${monthName(m.month)}</td><td>${money(m.required)}</td><td>${money(m.paid)}</td><td class="${rem?'pos':'zero'}">${money(rem)}</td></tr>`}).join('')+'</tbody></table></div>' : '<div class="empty">مفيش حسابات.</div>'}
+      months.length ? '<div class="tablewrap"><table><thead><tr><th>الشهر</th><th>الحصص</th><th>المطلوب</th><th>المدفوع</th><th>الباقي</th></tr></thead><tbody>'+months.map(m=>{const rem=Math.max(m.required-m.paid,0);return `<tr><td>${monthName(m.month)}</td><td>${m.sessions}</td><td>${money(m.required)}</td><td>${money(m.paid)}</td><td class="${rem?'pos':'zero'}">${money(rem)}</td></tr>`}).join('')+'</tbody></table></div>' : '<div class="empty">مفيش حسابات.</div>'}
     </div>
     <div class="panel"><h2>سجل الحضور</h2>${
       (r.attendance||[]).length ? '<div class="list">'+r.attendance.map(x=>`<div class="item"><span>${fmtDT(x.starts_at)} <span class="muted small">${esc(x.title||'')}</span></span><span class="pill ${x.present?'ok':'bad'}">${x.present?'حضر':'غاب'}</span></div>`).join('')+'</div>' : '<div class="empty">لسه مفيش حضور متسجل.</div>'}
@@ -335,20 +418,14 @@ async function initTeacher(){
 }
 $('#loginForm').onsubmit = async e => {
   e.preventDefault(); $('#loginMsg').textContent = 'جاري الدخول…';
-  const {error} = await sb.auth.signInWithPassword({email:$('#em').value.trim(), password:$('#pw').value});
-  if(error){ $('#loginMsg').textContent = /confirm/i.test(error.message) ? 'لازم تأكد الإيميل الأول من الرسالة اللي وصلتلك.' : 'الإيميل أو الباسورد غلط.'; return; }
+  const user = $('#un').value.trim().toLowerCase();
+  const email = user.includes('@') ? user : user + LOGIN_DOMAIN;
+  const {error} = await sb.auth.signInWithPassword({email, password:$('#pw').value});
+  if(error){ $('#loginMsg').textContent = 'اسم المستخدم أو الباسورد غلط.'; return; }
+  $('#loginMsg').textContent = ''; $('#pw').value = '';
   showApp();
 };
-$('#signupBtn').onclick = async () => {
-  const email = $('#em').value.trim(), password = $('#pw').value;
-  if(!email || password.length < 6){ $('#loginMsg').textContent = 'اكتب إيميل وباسورد 6 حروف على الأقل.'; return; }
-  $('#loginMsg').textContent = 'جاري إنشاء الحساب…';
-  const {data, error} = await sb.auth.signUp({email, password, options:{emailRedirectTo: location.origin + location.pathname + '#teacher'}});
-  if(error){ $('#loginMsg').textContent = 'الحساب ماتعملش: ' + error.message; return; }
-  if(data.session) showApp();
-  else $('#loginMsg').textContent = 'اتعمل الحساب. افتح الإيميل واضغط على لينك التأكيد، وبعدها ادخل.';
-};
-$('#logoutBtn').onclick = async () => { await sb.auth.signOut(); $('#t-app').hidden = true; $('#t-login').hidden = false; };
+$('#logoutBtn').onclick = async () => { await sb.auth.signOut(); clearInterval(refreshTimer); $('#t-app').hidden = true; $('#t-login').hidden = false; };
 
 async function showApp(){
   $('#t-login').hidden = true; $('#t-app').hidden = false;
@@ -357,70 +434,91 @@ async function showApp(){
   const d = new Date(); d.setMinutes(0,0,0); d.setHours(d.getHours()+1);
   $('#sesForm').starts_at.value = toLocalInput(d);
   await loadAll();
+  clearInterval(refreshTimer);
+  refreshTimer = setInterval(() => { if(!$('#v-teacher').hidden && !dlg.open) loadAll(); }, 60000);
 }
 async function loadAll(){
   const q = t => sb.from(t).select('*');
   const res = await Promise.all([q('students').order('name'), q('sessions').order('starts_at'), q('attendance'), q('payments').order('paid_at',{ascending:false}), q('exams').order('exam_date',{ascending:false}), q('grades')]);
   const keys = ['students','sessions','attendance','payments','exams','grades'];
   for(let i=0;i<res.length;i++){ if(res[i].error){ toast('مقدرتش أحمّل البيانات: '+res[i].error.message); return; } D[keys[i]] = res[i].data; }
+  sesMap = Object.fromEntries(D.sessions.map(s=>[s.id, s]));
   renderAll();
 }
 
-const active = () => D.students.filter(s => s.active);
-const groups = () => [...new Set(D.students.map(s=>s.group_name).filter(Boolean))].sort();
+/* ---------- الحسابات ---------- */
+const enrolled = () => D.students.filter(s => s.status==='active');
+const pending = () => D.students.filter(s => s.status==='pending').sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+const active = () => enrolled().filter(s => s.active);
+const groups = () => [...new Set(enrolled().map(s=>s.group_name).filter(Boolean))].sort();
 const stuById = id => D.students.find(s=>s.id===id);
 const paidFor = (sid, m) => D.payments.filter(p=>p.student_id===sid && p.month===m).reduce((t,p)=>t+ +p.amount, 0);
-const reqFor = (s, m) => (s.active && monthKey(new Date(s.created_at)) <= m) ? +s.monthly_fee : 0;
+const presentIn = (sid, m) => D.attendance.filter(a=>a.student_id===sid && a.present && sesMap[a.session_id] && monthKey(new Date(sesMap[a.session_id].starts_at))===m).length;
+const reqFor = (s, m) => s.status==='active' ? presentIn(s.id, m) * (+s.session_price || 0) : 0;
 const remFor = (s, m) => Math.max(reqFor(s,m) - paidFor(s.id,m), 0);
 const arrears = s => monthsFrom(monthKey(new Date(s.created_at)), curMonth()).reduce((t,m)=>t+remFor(s,m), 0);
 function attOf(sid){ const a = D.attendance.filter(x=>x.student_id===sid); return {p:a.filter(x=>x.present).length, t:a.length}; }
 function sesStats(sid){ const a = D.attendance.filter(x=>x.session_id===sid); return {p:a.filter(x=>x.present).length, t:a.length}; }
-function monthTotals(m){ let req=0, paid=0; for(const s of D.students){ req += reqFor(s,m); } paid = D.payments.filter(p=>p.month===m).reduce((t,p)=>t+ +p.amount,0); return {req, paid, rem:Math.max(req-paid,0)}; }
+function monthTotals(m){ let req=0; for(const s of enrolled()) req += reqFor(s,m); const paid = D.payments.filter(p=>p.month===m).reduce((t,p)=>t+ +p.amount,0); return {req, paid, rem:Math.max(req-paid,0)}; }
 
+/* ---------- الجرس ---------- */
+function renderBell(){
+  const n = pending().length, b = $('#bellCount');
+  b.hidden = !n; b.textContent = n;
+}
+$('#bellBtn').onclick = () => {
+  const list = pending();
+  if(!list.length){ toast('مفيش طلاب جداد'); return; }
+  openDlg('طلاب جداد (' + list.length + ')', `<p class="small muted" style="margin-top:0">دوس على اسم الطالب عشان تحدد ميعاد الحصة وسعرها.</p>
+    <div class="list">${list.map(s=>`<button type="button" class="item pend" data-act="approve" data-id="${s.id}"><span><b>${esc(s.name)}</b><br><span class="small muted">${esc(s.grade||'')} · ${fmtD(s.created_at)}</span></span><span>‹</span></button>`).join('')}</div>`, null);
+};
+
+/* ---------- العرض ---------- */
 $('#tabs').onclick = e => { const b = e.target.closest('[data-tab]'); if(!b) return; tab = b.dataset.tab; $$('#tabs button').forEach(x=>x.classList.toggle('on', x===b)); $$('[data-pane]').forEach(p=>p.hidden = p.dataset.pane!==tab); renderAll(); };
 function renderAll(){
   $('#groupsList').innerHTML = groups().map(g=>`<option value="${esc(g)}">`).join('');
-  const gsel = $('#stuG'), gv = gsel.value; gsel.innerHTML = '<option value="">كل المجموعات</option>' + groups().map(g=>`<option>${esc(g)}</option>`).join(''); gsel.value = gv;
-  renderDash(); renderStudents(); renderSessions(); renderExams(); renderMoney();
+  const gsel = $('#stuG'), gv = gsel.value; gsel.innerHTML = '<option value="">كل المواعيد</option>' + groups().map(g=>`<option>${esc(g)}</option>`).join(''); gsel.value = gv;
+  renderBell(); renderDash(); renderStudents(); renderSessions(); renderExams(); renderMoney();
 }
 
 function renderDash(){
-  const m = curMonth(), T = monthTotals(m), now = new Date();
+  const m = curMonth(), T = monthTotals(m), now = new Date(), np = pending().length;
   const todays = D.sessions.filter(s => sameDay(new Date(s.starts_at), now));
   const next = D.sessions.filter(s => new Date(s.starts_at) > now && !sameDay(new Date(s.starts_at), now)).slice(0,5);
-  const owing = active().map(s=>({s, r:remFor(s,m)})).filter(x=>x.r>0).sort((a,b)=>b.r-a.r).slice(0,8);
+  const owing = enrolled().map(s=>({s, r:remFor(s,m)})).filter(x=>x.r>0).sort((a,b)=>b.r-a.r).slice(0,8);
   const pct = T.req ? Math.round(T.paid/T.req*100) : 0;
   $('[data-pane="dash"]').innerHTML = `
+    ${np ? `<div class="panel row between"><span>🔔 فيه <b>${np}</b> ${np===1?'طالب جديد مستني':'طلاب جداد مستنيين'} تحديد ميعاد الحصة والسعر.</span><button class="primary" type="button" id="dashBell">افتح</button></div>` : ''}
     <div class="stats">
       <div class="stat lead"><div class="l">تحصيل ${monthName(m)}</div><div class="v">${money(T.paid)}</div><div class="small">من ${money(T.req)} (${pct}%)</div></div>
       <div class="stat bad"><div class="l">باقي الشهر</div><div class="v">${money(T.rem)}</div></div>
-      <div class="stat"><div class="l">الطلاب</div><div class="v">${active().length}</div><div class="small muted">${groups().length} مجموعة</div></div>
+      <div class="stat"><div class="l">الطلاب</div><div class="v">${active().length}</div><div class="small muted">${groups().length} ميعاد</div></div>
       <div class="stat"><div class="l">حصص النهارده</div><div class="v">${todays.length}</div></div>
     </div>
     <div class="panel"><h2>حصص النهارده</h2>${todays.length ? '<div class="list">'+todays.map(sesItem).join('')+'</div>' : '<div class="empty">مفيش حصص النهارده.</div>'}</div>
-    <div class="panel"><div class="row between"><h2>لسه مدفعوش الشهر ده</h2><button type="button" class="small" data-tabjump="money">كل الحسابات</button></div>${
-      owing.length ? '<div class="list">'+owing.map(x=>`<div class="item"><span><b>${esc(x.s.name)}</b> <span class="muted small">${esc(x.s.group_name||'')}</span></span><span class="row"><span class="pos">${money(x.r)}</span><button class="icon" type="button" data-act="payStu" data-id="${x.s.id}">💵 دفع</button></span></div>`).join('')+'</div>' : '<div class="empty">كل الطلاب دفعوا الشهر ده 👌</div>'}
+    <div class="panel"><div class="row between"><h2>عليهم فلوس الشهر ده</h2><button type="button" class="small" data-tabjump="money">كل الحسابات</button></div>${
+      owing.length ? '<div class="list">'+owing.map(x=>`<div class="item"><span><b>${esc(x.s.name)}</b> <span class="muted small">${esc(x.s.group_name||'')}</span></span><span class="row"><span class="pos">${money(x.r)}</span><button class="icon" type="button" data-act="payStu" data-id="${x.s.id}">💵 دفع</button></span></div>`).join('')+'</div>' : '<div class="empty">مفيش فلوس متأخرة الشهر ده 👌</div>'}
     </div>
-    <div class="panel"><h2>الحصص الجاية</h2>${next.length ? '<div class="list">'+next.map(sesItem).join('')+'</div>' : '<div class="empty">مفيش حصص جاية. ضيف من تبويب الحصص.</div>'}</div>
-    ${!D.students.length ? '<div class="panel empty">ابدأ بإضافة أول طالب من تبويب «الطلاب».</div>' : ''}`;
+    <div class="panel"><h2>الحصص الجاية</h2>${next.length ? '<div class="list">'+next.map(sesItem).join('')+'</div>' : '<div class="empty">مفيش حصص جاية. ضيف من تبويب الحصص.</div>'}</div>`;
+  const db = $('#dashBell'); if(db) db.onclick = () => $('#bellBtn').click();
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-tabjump]'); if(b) $(`#tabs [data-tab="${b.dataset.tabjump}"]`).click(); });
 
 function renderStudents(){
   const q = $('#stuQ').value.trim().toLowerCase(), g = $('#stuG').value, m = curMonth();
-  const list = D.students.filter(s => (!g || s.group_name===g) && (!q || [s.name,s.code,s.parent_phone].some(v=>String(v||'').toLowerCase().includes(q))));
-  if(!D.students.length){ $('#stuTable').innerHTML = '<div class="panel empty">مفيش طلاب لسه. اضغط «+ طالب جديد».</div>'; return; }
-  $('#stuTable').innerHTML = `<div class="tablewrap"><table><thead><tr><th>الاسم</th><th>الكود</th><th>السنة</th><th>المجموعة</th><th>الشهرية</th><th>باقي الشهر</th><th>متأخرات</th><th>الحضور</th><th></th></tr></thead><tbody>${
+  const list = enrolled().filter(s => (!g || s.group_name===g) && (!q || [s.name,s.code,s.parent_phone,s.student_phone,s.parent_name].some(v=>String(v||'').toLowerCase().includes(q))));
+  if(!enrolled().length){ $('#stuTable').innerHTML = '<div class="panel empty">مفيش طلاب متسجلين لسه. الطلاب الجداد بيظهروا في الجرس 🔔، أو ضيف طالب بنفسك.</div>'; return; }
+  $('#stuTable').innerHTML = `<div class="tablewrap"><table><thead><tr><th>الاسم</th><th>الكود</th><th>السنة</th><th>ميعاد الحصة</th><th>سعر الحصة</th><th>حصص الشهر</th><th>باقي الشهر</th><th>متأخرات</th><th>الحضور</th><th></th></tr></thead><tbody>${
     list.map(s=>{ const a=attOf(s.id), r=remFor(s,m), ar=arrears(s); return `<tr${s.active?'':' style="opacity:.55"'}>
       <td><b>${esc(s.name)}</b>${s.active?'':' <span class="pill">موقوف</span>'}</td>
       <td class="code">${esc(s.code)}</td><td>${esc(s.grade||'')}</td><td>${esc(s.group_name||'')}</td>
-      <td>${money(s.monthly_fee)}</td><td class="${r?'pos':'zero'}">${money(r)}</td><td class="${ar?'pos':'zero'}">${money(ar)}</td>
+      <td>${money(s.session_price)}</td><td>${presentIn(s.id,m)}</td><td class="${r?'pos':'zero'}">${money(r)}</td><td class="${ar?'pos':'zero'}">${money(ar)}</td>
       <td>${a.p}/${a.t}</td>
       <td><span class="row" style="flex-wrap:nowrap;gap:4px">
         <button class="icon" type="button" title="دفع" data-act="payStu" data-id="${s.id}">💵</button>
         <button class="icon" type="button" title="ابعت الكود لولي الأمر" data-act="shareStu" data-id="${s.id}">📤</button>
         <button class="icon" type="button" title="تعديل" data-act="editStu" data-id="${s.id}">✏️</button>
-        <button class="icon danger" type="button" title="حذف" data-act="delStu" data-id="${s.id}">🗑</button></span></td></tr>`; }).join('') || '<tr><td colspan="9" class="empty">مفيش نتايج.</td></tr>'
+        <button class="icon danger" type="button" title="حذف" data-act="delStu" data-id="${s.id}">🗑</button></span></td></tr>`; }).join('') || '<tr><td colspan="10" class="empty">مفيش نتايج.</td></tr>'
   }</tbody></table></div>`;
 }
 $('#stuQ').oninput = renderStudents; $('#stuG').onchange = renderStudents;
@@ -449,7 +547,7 @@ $('#sesForm').onsubmit = async e => {
 function renderExams(){
   $('#examList').innerHTML = D.exams.length ? D.exams.map(x=>{
     const gs = D.grades.filter(g=>g.exam_id===x.id), avg = gs.length ? Math.round(gs.reduce((t,g)=>t+g.score/x.max_score*100,0)/gs.length) : null;
-    return `<div class="item"><span><b>${esc(x.title)}</b> <span class="muted small">${esc(x.group_name||'كل المجموعات')}</span><br><span class="small">${fmtD(x.exam_date)} · من ${num(x.max_score)}</span></span>
+    return `<div class="item"><span><b>${esc(x.title)}</b> <span class="muted small">${esc(x.group_name||'كل المواعيد')}</span><br><span class="small">${fmtD(x.exam_date)} · من ${num(x.max_score)}</span></span>
       <span class="row"><span class="small muted">${gs.length ? gs.length+' طالب · متوسط '+avg+'%' : 'لسه مفيش درجات'}</span>
       <button class="icon" type="button" data-act="grades" data-id="${x.id}">📝 الدرجات</button>
       <button class="icon danger" type="button" data-act="delExam" data-id="${x.id}" title="حذف">🗑</button></span></div>`;
@@ -463,28 +561,47 @@ $('#examForm').onsubmit = async e => {
 
 function renderMoney(){
   const m = $('#monthIn').value || curMonth(), T = monthTotals(m);
-  const rows = D.students.filter(s=>reqFor(s,m)>0 || paidFor(s.id,m)>0);
+  const rows = enrolled().filter(s=>reqFor(s,m)>0 || paidFor(s.id,m)>0);
   const pays = D.payments.filter(p=>p.month===m);
   const last6 = monthsFrom(monthKey(new Date(new Date().getFullYear(), new Date().getMonth()-5, 1)), curMonth()).map(k=>({k, ...monthTotals(k)}));
   const max = Math.max(1, ...last6.map(x=>Math.max(x.req,x.paid)));
   const pct = T.req ? Math.round(T.paid/T.req*100) : 0;
   $('#moneyBody').innerHTML = `
     <div class="stats">
-      <div class="stat"><div class="l">المطلوب في ${monthName(m)}</div><div class="v">${money(T.req)}</div></div>
+      <div class="stat"><div class="l">المطلوب في ${monthName(m)}</div><div class="v">${money(T.req)}</div><div class="small muted">حسب الحصص اللي الطلاب حضروها</div></div>
       <div class="stat good"><div class="l">اتحصّل</div><div class="v">${money(T.paid)}</div></div>
       <div class="stat bad"><div class="l">الباقي</div><div class="v">${money(T.rem)}</div></div>
       <div class="stat"><div class="l">نسبة التحصيل</div><div class="v">${pct}%</div><div class="meter"><i style="width:${Math.min(pct,100)}%"></i></div></div>
     </div>
     <div class="panel"><h2>آخر 6 شهور</h2><div class="mbars">${last6.map(x=>`<div class="mbar" title="${monthName(x.k)}: ${money(x.paid)} من ${money(x.req)}"><span>${num(x.paid)}</span><div class="stack" style="height:${Math.max(x.req,x.paid)/max*100}%"><div class="p" style="height:${x.req?Math.min(x.paid/Math.max(x.req,x.paid)*100,100):100}%"></div></div><span>${x.k.slice(5)}/${x.k.slice(2,4)}</span></div>`).join('')}</div>
       <p class="small muted" style="margin:8px 0 0">العمود كله = المطلوب، والجزء الملوّن = اللي اتحصّل.</p></div>
-    <div class="panel"><h2>حساب كل طالب</h2>${rows.length ? `<div class="tablewrap"><table><thead><tr><th>الطالب</th><th>المجموعة</th><th>المطلوب</th><th>المدفوع</th><th>الباقي</th><th></th></tr></thead><tbody>${
-      rows.map(s=>{const rq=reqFor(s,m), pd=paidFor(s.id,m), rm=Math.max(rq-pd,0); return `<tr><td>${esc(s.name)}</td><td>${esc(s.group_name||'')}</td><td>${money(rq)}</td><td>${money(pd)}</td><td class="${rm?'pos':'zero'}">${money(rm)}</td><td>${rm?`<button class="icon" type="button" data-act="payStu" data-id="${s.id}">💵 دفع</button>`:'<span class="pill ok">خالص</span>'}</td></tr>`}).join('')
-    }</tbody><tfoot><tr><td colspan="2">الإجمالي</td><td>${money(T.req)}</td><td>${money(T.paid)}</td><td>${money(T.rem)}</td><td></td></tr></tfoot></table></div>` : '<div class="empty">مفيش حسابات للشهر ده.</div>'}</div>
+    <div class="panel"><h2>حساب كل طالب</h2>${rows.length ? `<div class="tablewrap"><table><thead><tr><th>الطالب</th><th>ميعاد الحصة</th><th>الحصص</th><th>المطلوب</th><th>المدفوع</th><th>الباقي</th><th></th></tr></thead><tbody>${
+      rows.map(s=>{const rq=reqFor(s,m), pd=paidFor(s.id,m), rm=Math.max(rq-pd,0); return `<tr><td>${esc(s.name)}</td><td>${esc(s.group_name||'')}</td><td>${presentIn(s.id,m)} × ${num(s.session_price)}</td><td>${money(rq)}</td><td>${money(pd)}</td><td class="${rm?'pos':'zero'}">${money(rm)}</td><td>${rm?`<button class="icon" type="button" data-act="payStu" data-id="${s.id}">💵 دفع</button>`:'<span class="pill ok">خالص</span>'}</td></tr>`}).join('')
+    }</tbody><tfoot><tr><td colspan="3">الإجمالي</td><td>${money(T.req)}</td><td>${money(T.paid)}</td><td>${money(T.rem)}</td><td></td></tr></tfoot></table></div>` : '<div class="empty">مفيش حسابات للشهر ده.</div>'}</div>
     <div class="panel"><h2>المدفوعات المسجلة في الشهر</h2>${pays.length ? '<div class="list">'+pays.map(p=>{const s=stuById(p.student_id); return `<div class="item"><span><b>${esc(s?s.name:'—')}</b> <span class="muted small">${fmtD(p.paid_at)}${p.note?' · '+esc(p.note):''}</span></span><span class="row"><b>${money(p.amount)}</b><button class="icon danger" type="button" data-act="delPay" data-id="${p.id}" title="حذف">🗑</button></span></div>`}).join('')+'</div>' : '<div class="empty">مفيش مدفوعات متسجلة.</div>'}</div>`;
 }
 $('#monthIn').onchange = renderMoney;
 
+/* ---------- الأوامر ---------- */
 const ACT = {
+  approve(id){
+    const s = stuById(id); if(!s) return;
+    openDlg('تسجيل ' + s.name, `<div class="list" style="margin-bottom:12px">
+        <div class="item"><span class="muted small">السنة</span><span>${esc(s.grade||'')}</span></div>
+        <div class="item"><span class="muted small">ولي الأمر</span><span>${esc(s.parent_name||'')} · <span dir="ltr">${esc(s.parent_phone||'')}</span></span></div>
+        <div class="item"><span class="muted small">موبايل الطالب</span><span dir="ltr">${esc(s.student_phone||'')}</span></div>
+        <div class="item"><span class="muted small">الكود</span><span class="code">${esc(s.code)}</span></div>
+      </div>
+      <div class="form-grid">
+        <div><label class="f">ميعاد الحصة</label><input name="group_name" list="groupsList" required placeholder="مثلاً: السبت والثلاثاء 4 العصر"></div>
+        <div><label class="f">سعر الحصة (جنيه)</label><input name="session_price" type="number" min="0" step="any" required></div>
+      </div>
+      <p class="small muted">لو الميعاد موجود قبل كده اختاره من القايمة بنفس الكتابة، عشان الطالب يظهر في حضور الحصص دي.</p>`,
+      async f => {
+        const {error} = await sb.from('students').update({status:'active', group_name:f.get('group_name').trim(), session_price:+f.get('session_price')||0}).eq('id', id);
+        check(error); toast('اتسجل ' + s.name + ' على البرنامج'); await loadAll();
+      }, 'تسجيل الطالب');
+  },
   newStu: () => stuForm(null),
   editStu: id => stuForm(stuById(id)),
   async delStu(id){ const s=stuById(id); if(!confirm(`حذف ${s.name}؟ هيتمسح حضوره ودرجاته ومدفوعاته كمان.`)) return; check((await sb.from('students').delete().eq('id',id)).error); toast('اتحذف الطالب'); await loadAll(); },
@@ -493,12 +610,12 @@ const ACT = {
     const msg = `أهلاً، ده كود متابعة ${s.name}: ${s.code}\nتقدر تشوف الحضور والدرجات والحساب من هنا:\n${link}`;
     let phone = String(s.parent_phone||'').replace(/\D/g,''); if(phone.startsWith('0')) phone = '2'+phone;
     if(phone) window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg), '_blank');
-    else navigator.clipboard?.writeText(msg).then(()=>toast('اتنسخت الرسالة، ابعتها لولي الأمر'), ()=>prompt('انسخ الرسالة:', msg));
+    else copy(msg);
   },
   payStu(id){
     const m = $('#monthIn').value || curMonth(), s = id ? stuById(id) : null;
-    const opts = active().map(x=>`<option value="${x.id}" ${s&&s.id===x.id?'selected':''}>${esc(x.name)}${x.group_name?' - '+esc(x.group_name):''}</option>`).join('');
-    const def = s ? (remFor(s,m) || s.monthly_fee) : '';
+    const opts = enrolled().map(x=>`<option value="${x.id}" ${s&&s.id===x.id?'selected':''}>${esc(x.name)}${x.group_name?' - '+esc(x.group_name):''}</option>`).join('');
+    const def = s ? (remFor(s,m) || s.session_price || '') : '';
     openDlg('تسجيل دفع', `<div class="form-grid">
       <div style="grid-column:1/-1"><label class="f">الطالب</label><select name="student_id" required><option value="">اختار</option>${opts}</select></div>
       <div><label class="f">المبلغ</label><input name="amount" type="number" min="1" step="any" value="${def}" required></div>
@@ -509,11 +626,11 @@ const ACT = {
   },
   async delPay(id){ if(!confirm('حذف الدفعة دي؟')) return; check((await sb.from('payments').delete().eq('id',id)).error); await loadAll(); },
   att(id){
-    const ses = D.sessions.find(s=>s.id===id);
+    const ses = sesMap[id];
     const list = active().filter(s=>s.group_name===ses.group_name);
     const extra = D.attendance.filter(a=>a.session_id===id && !list.some(s=>s.id===a.student_id)).map(a=>stuById(a.student_id)).filter(Boolean);
     const all = [...list, ...extra];
-    if(!all.length){ toast('مفيش طلاب في مجموعة «'+ses.group_name+'». اكتب نفس اسم المجموعة في بيانات الطالب.'); return; }
+    if(!all.length){ toast('مفيش طلاب في ميعاد «'+ses.group_name+'». اكتب نفس الميعاد في بيانات الطالب.'); return; }
     const rec = sid => D.attendance.find(a=>a.session_id===id && a.student_id===sid);
     openDlg('حضور ' + ses.group_name, `<p class="small muted" style="margin-top:0">${fmtDT(ses.starts_at)}</p>
       <div class="row" style="margin-bottom:6px"><button type="button" class="small" id="allIn">الكل حاضر</button><button type="button" class="small" id="allOut">الكل غايب</button></div>
@@ -550,29 +667,32 @@ function stuForm(s){
     <div style="grid-column:1/-1"><label class="f">اسم الطالب</label><input name="name" required value="${esc(s?.name)}"></div>
     <div><label class="f">كود الطالب</label><div class="row" style="flex-wrap:nowrap"><input name="code" class="code" required value="${esc(s?.code || genCode())}"><button type="button" class="icon" id="regen" title="كود جديد">↻</button></div></div>
     <div><label class="f">السنة الدراسية</label><input name="grade" list="gradesList" value="${esc(s?.grade)}"></div>
-    <div><label class="f">المجموعة</label><input name="group_name" list="groupsList" value="${esc(s?.group_name)}" placeholder="مثلاً: تالتة ثانوي - السبت"></div>
-    <div><label class="f">تليفون ولي الأمر</label><input name="parent_phone" type="tel" value="${esc(s?.parent_phone)}" placeholder="01xxxxxxxxx"></div>
-    <div><label class="f">الشهرية (جنيه)</label><input name="monthly_fee" type="number" min="0" step="any" value="${s ? s.monthly_fee : ''}" required></div>
+    <div><label class="f">اسم ولي الأمر</label><input name="parent_name" value="${esc(s?.parent_name)}"></div>
+    <div><label class="f">موبايل ولي الأمر</label><input name="parent_phone" type="tel" value="${esc(s?.parent_phone)}" placeholder="01xxxxxxxxx"></div>
+    <div><label class="f">موبايل الطالب</label><input name="student_phone" type="tel" value="${esc(s?.student_phone)}" placeholder="01xxxxxxxxx"></div>
+    <div><label class="f">ميعاد الحصة</label><input name="group_name" list="groupsList" required value="${esc(s?.group_name)}" placeholder="مثلاً: السبت والثلاثاء 4 العصر"></div>
+    <div><label class="f">سعر الحصة (جنيه)</label><input name="session_price" type="number" min="0" step="any" value="${s ? s.session_price : ''}" required></div>
     <div style="grid-column:1/-1"><label class="f">ملاحظات</label><textarea name="notes" rows="2">${esc(s?.notes)}</textarea></div>
-    ${s ? `<label class="check-row" style="grid-column:1/-1"><span>الطالب لسه بيحضر (لو شلت العلامة مش هيتحسب عليه شهرية)</span><input type="checkbox" name="active" ${s.active?'checked':''}></label>` : ''}
+    ${s ? `<label class="check-row" style="grid-column:1/-1"><span>الطالب لسه بيحضر</span><input type="checkbox" name="active" ${s.active?'checked':''}></label>` : ''}
   </div>`, async (f, form) => {
-    const obj = {name:f.get('name').trim(), code:f.get('code').trim().toUpperCase(), grade:f.get('grade').trim()||null, group_name:f.get('group_name').trim()||null, parent_phone:f.get('parent_phone').trim()||null, monthly_fee:+f.get('monthly_fee')||0, notes:f.get('notes').trim()||null};
+    const obj = {name:f.get('name').trim(), code:f.get('code').trim().toUpperCase(), grade:f.get('grade').trim()||null, parent_name:f.get('parent_name').trim()||null, parent_phone:f.get('parent_phone').trim()||null, student_phone:f.get('student_phone').trim()||null, group_name:f.get('group_name').trim()||null, session_price:+f.get('session_price')||0, notes:f.get('notes').trim()||null};
     if(s) obj.active = !!form.active.checked;
-    const {error} = s ? await sb.from('students').update(obj).eq('id', s.id) : await sb.from('students').insert(obj);
+    const {error} = s ? await sb.from('students').update(obj).eq('id', s.id) : await sb.from('students').insert({...obj, status:'active'});
     check(error); toast(s ? 'اتحفظت التعديلات' : 'اتضاف الطالب'); await loadAll();
   });
   $('#regen').onclick = () => { $('#dlgForm').code.value = genCode(); };
 }
 
+/* ---------- البداية ---------- */
 const h = location.hash.slice(1);
 if(h.startsWith('parent')) go('parent', decodeURIComponent(h.split('=')[1]||''));
-else if(h.startsWith('teacher') || /access_token|type=signup/.test(h)) go('teacher');
+else if(h.startsWith('teacher')) go('teacher');
+else if(h.startsWith('register')) go('register');
 else {
   let saved=''; try{ saved = localStorage.getItem('ta-code')||''; }catch(e){}
   go('home');
   if(saved) $('#codeIn').value = saved;
 }
-sb.auth.onAuthStateChange((ev) => { if(ev==='SIGNED_IN' && !$('#v-teacher').hidden && $('#t-app').hidden) showApp(); });
 })();
 </script>
 </body>
