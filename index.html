@@ -10,17 +10,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{
-  --bg:#eaf0ee;--surface:#fff;--soft:#f4f8f6;--ink:#15201c;--muted:#5b6a64;--line:#d8e1dd;
-  --accent:#1f6b52;--accent-ink:#fff;--ok:#15805f;--bad:#c23b3b;--warn:#b26700;
-  color-scheme:light;box-sizing:border-box;
+  --bg:#06080c;--surface:#0f131b;--soft:#161c27;--ink:#e8eefc;--muted:#8d99b0;--line:#222b3b;
+  --accent:#2f7cf6;--accent-2:#5b9bff;--accent-ink:#fff;--ok:#3ccf91;--bad:#ff6b6b;--warn:#f5b74a;
+  color-scheme:dark;box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0e1614;--surface:#16211e;--soft:#1c2a26;--ink:#e5eeeb;--muted:#93a59e;--line:#283a35;
-  --accent:#3fb58b;--accent-ink:#06140f;--ok:#3fc495;--bad:#f07070;--warn:#f0a744;color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0e1614;--surface:#16211e;--soft:#1c2a26;--ink:#e5eeeb;--muted:#93a59e;--line:#283a35;
-  --accent:#3fb58b;--accent-ink:#06140f;--ok:#3fc495;--bad:#f07070;--warn:#f0a744;color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;font-size:15px;line-height:1.6}
 .wrap{max-width:1100px;margin:0 auto;padding:16px 14px 60px}
@@ -47,7 +41,7 @@ label.f{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}
 .brand{display:flex;align-items:center;gap:10px}
 .brand .mark{width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:1.2rem}
 .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:20px}
-.choice{text-align:right;padding:22px;border-radius:16px;background:var(--surface);border:1px solid var(--line);font-size:1rem}
+.choice{text-align:right;padding:22px;border-radius:16px;background:var(--surface);border:1px solid var(--line);border-inline-start:4px solid var(--accent);font-size:1rem}
 .choice b{display:block;font-size:1.25rem;margin-bottom:4px}
 .choice span{color:var(--muted);font-weight:400}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
@@ -59,7 +53,7 @@ label.f{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}
 .stat.lead .l{color:inherit;opacity:.8}
 .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px}
 .tabs button{white-space:nowrap;background:transparent}
-.tabs button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tabs button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 table{border-collapse:collapse;width:100%;font-size:.86rem}
 th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -84,13 +78,26 @@ tfoot td{font-weight:700;background:var(--soft)}
 .badge{position:absolute;top:-7px;left:-7px;background:var(--bad);color:#fff;border-radius:999px;font-size:.7rem;min-width:19px;height:19px;display:grid;place-items:center;padding:0 5px}
 .codebox{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:2.3rem;font-weight:700;letter-spacing:.15em;text-align:center;padding:16px;border:2px dashed var(--accent);border-radius:14px;margin:12px 0;color:var(--accent)}
 .pend{width:100%;text-align:right;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.att{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+.att.on{border-color:var(--ok)}
+.att .ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tog{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:.88rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.tog input{width:18px;height:18px}
+.att input.amt{width:90px;padding:6px 8px}
+.totals{position:sticky;bottom:0;z-index:5;background:var(--surface);border:1px solid var(--accent);border-radius:14px;padding:12px 14px;margin-top:12px;box-shadow:0 -8px 24px rgba(0,0,0,.5)}
+.totals .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px}
+.totals .t{font-size:.78rem;color:var(--muted)} .totals .n{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:480px){.att{grid-template-columns:1fr}.att .ctrls{justify-content:flex-start}}
+.days{display:flex;flex-wrap:wrap;gap:6px}
+.days label{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid var(--line);border-radius:9px;background:var(--soft);font-size:.85rem;cursor:pointer}
+.days input{width:16px;height:16px}
 .code{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;font-weight:700}
 dialog{border:none;border-radius:16px;padding:0;width:min(560px,94vw);background:var(--surface);color:var(--ink)}
 dialog::backdrop{background:rgba(0,0,0,.45)}
 dialog form{padding:16px;max-height:86vh;overflow-y:auto}
 .dlg-actions{display:flex;gap:8px;justify-content:flex-start;margin-top:14px;position:sticky;bottom:-16px;background:var(--surface);padding:10px 0}
 .check-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
-.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:50;max-width:90vw}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:50;max-width:90vw}
 [hidden]{display:none!important}
 @media print{.noprint{display:none!important}}
 </style>
@@ -100,7 +107,6 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
   <div class="top">
     <div class="brand"><div class="mark">✎</div><div><h1>متابعة الطلاب</h1><div class="small muted" id="subTitle">حضور، درجات، وحسابات</div></div></div>
     <div class="row noprint">
-      <button class="icon" id="themeBtn" type="button" aria-label="تبديل الوضع الليلي">🌓</button>
       <button id="homeBtn" type="button" hidden>الرئيسية</button>
     </div>
   </div>
@@ -121,12 +127,10 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
       <p class="small muted" style="margin-top:0">املا كل البيانات، وبعد الحفظ هيظهرلك كود الطالب.</p>
       <form id="regForm" class="form-grid" novalidate>
         <div style="grid-column:1/-1"><label class="f" for="r_name">اسم الطالب (ثلاثي)</label><input id="r_name" name="name" required minlength="5" maxlength="100"></div>
-        <div><label class="f" for="r_grade">السنة الدراسية</label><select id="r_grade" name="grade" required><option value="">اختار السنة</option>
-          <option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option>
-          <option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option></select></div>
+        <div><label class="f" for="r_grade">الصف الدراسي</label><select id="r_grade" name="grade" required><option value="">اختار الصف</option></select></div>
         <div><label class="f" for="r_pname">اسم ولي الأمر</label><input id="r_pname" name="parent_name" required minlength="3" maxlength="100"></div>
-        <div><label class="f" for="r_pphone">موبايل ولي الأمر</label><input id="r_pphone" name="parent_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" placeholder="01xxxxxxxxx"></div>
-        <div><label class="f" for="r_sphone">موبايل الطالب</label><input id="r_sphone" name="student_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" placeholder="01xxxxxxxxx"></div>
+        <div><label class="f" for="r_pphone">موبايل ولي الأمر</label><input id="r_pphone" name="parent_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" maxlength="11" placeholder="01xxxxxxxxx" title="رقم موبايل 11 رقم يبدأ بـ 01"></div>
+        <div><label class="f" for="r_sphone">موبايل الطالب</label><input id="r_sphone" name="student_phone" type="tel" inputmode="numeric" required pattern="01[0-9]{9}" maxlength="11" placeholder="01xxxxxxxxx" title="رقم موبايل 11 رقم يبدأ بـ 01"></div>
         <div style="grid-column:1/-1"><button class="primary" type="submit" id="regBtn" style="width:100%">حفظ</button></div>
       </form>
       <p class="small" id="regMsg" style="margin:8px 0 0;color:var(--bad)"></p>
@@ -162,7 +166,7 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
     <div id="t-login" class="panel" hidden>
       <h2 dir="ltr" style="text-align:right">Mr.Michael Fakhry</h2>
       <form id="loginForm" class="form-grid">
-        <div><label class="f" for="un">اسم المستخدم</label><input id="un" required autocomplete="username" autocapitalize="none" dir="ltr"></div>
+        <div><label class="f" for="un">اسم المستخدم</label><input id="un" required autocomplete="off" autocapitalize="none" spellcheck="false" dir="ltr"></div>
         <div><label class="f" for="pw">الباسورد</label><input id="pw" type="password" required autocomplete="current-password" dir="ltr"></div>
         <div style="align-self:end"><button class="primary" type="submit">دخول</button></div>
       </form>
@@ -173,6 +177,7 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
       <div class="row between noprint" style="margin-bottom:10px">
         <nav class="tabs" id="tabs">
           <button data-tab="dash" class="on" type="button">الرئيسية</button>
+          <button data-tab="daily" type="button">تسجيل الحضور</button>
           <button data-tab="students" type="button">الطلاب</button>
           <button data-tab="sessions" type="button">الحصص والحضور</button>
           <button data-tab="exams" type="button">الامتحانات</button>
@@ -180,17 +185,31 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
         </nav>
         <div class="row" style="gap:8px">
           <button id="bellBtn" class="icon bell" type="button" aria-label="طلاب جداد">🔔<span class="badge" id="bellCount" hidden>0</span></button>
+          <button id="pwBtn" class="icon" type="button" aria-label="تغيير الباسورد" title="تغيير الباسورد">🔒</button>
           <button id="logoutBtn" type="button" class="small">خروج</button>
         </div>
       </div>
 
       <div data-pane="dash"></div>
 
+      <div data-pane="daily" hidden>
+        <div class="panel">
+          <h2>تسجيل الحضور والدفع</h2>
+          <div class="form-grid">
+            <div><label class="f" for="dGrade">الصف</label><select id="dGrade"><option value="">اختار الصف</option></select></div>
+            <div><label class="f" for="dGroup">الحصة</label><select id="dGroup"><option value="">اختار الحصة</option></select></div>
+            <div><label class="f" for="dDate">اليوم</label><input id="dDate" type="date"><div class="small muted" id="dDay" style="margin-top:4px"></div></div>
+            <div><label class="f" for="dTime">الساعة</label><input id="dTime" type="time"></div>
+          </div>
+        </div>
+        <div id="dBody"></div>
+      </div>
+
       <div data-pane="students" hidden>
         <div class="panel">
           <div class="row">
             <div class="grow"><input id="stuQ" placeholder="ابحث بالاسم أو الكود أو التليفون"></div>
-            <div style="flex:0 1 180px"><select id="stuG"><option value="">كل المواعيد</option></select></div>
+            <div style="flex:0 1 260px"><select id="stuG"><option value="">كل المواعيد</option></select></div>
             <button class="primary" type="button" data-act="newStu">+ طالب جديد</button>
           </div>
         </div>
@@ -198,8 +217,9 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
       </div>
 
       <div data-pane="sessions" hidden>
+        <div class="panel"><h2>المواعيد</h2><div id="groupList" class="list"></div></div>
         <div class="panel">
-          <h2>إضافة حصة</h2>
+          <h2>إضافة حصة يدوي</h2>
           <form id="sesForm" class="form-grid">
             <div><label class="f">ميعاد الحصة (المجموعة)</label><input name="group_name" list="groupsList" required placeholder="مثلاً: السبت والثلاثاء 4 العصر"></div>
             <div><label class="f">عنوان الحصة (اختياري)</label><input name="title" placeholder="مثلاً: الباب الأول"></div>
@@ -239,10 +259,7 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
 </div>
 
 <datalist id="groupsList"></datalist>
-<datalist id="gradesList">
-  <option value="الصف الأول الإعدادي"><option value="الصف الثاني الإعدادي"><option value="الصف الثالث الإعدادي">
-  <option value="الصف الأول الثانوي"><option value="الصف الثاني الثانوي"><option value="الصف الثالث الثانوي">
-</datalist>
+<datalist id="gradesList"></datalist>
 
 <dialog id="dlg">
   <form id="dlgForm">
@@ -260,7 +277,8 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
 const SB_URL = 'https://xlzgormomkhwygsnpbeu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsemdvcm1vbWtod3lnc25wYmV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjEyNDksImV4cCI6MjEwNzkzNzI0OX0.lUXy06ZSsNc8o-9UNz0dMD4tZKvIhG0Fajp42fFm4Ec';
 const LOGIN_DOMAIN = '@mrmichael.app';
-const sb = supabase.createClient(SB_URL, SB_KEY);
+const sb = supabase.createClient(SB_URL, SB_KEY, {auth:{storage:window.sessionStorage, persistSession:true, autoRefreshToken:true}});
+const IDLE_MIN = 30, MAX_TRIES = 5, LOCK_MIN = 10;
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -286,13 +304,22 @@ function toast(msg){ const t=document.createElement('div'); t.className='toast';
 function check(error){ if(error){ toast(error.code==='23505' ? 'الكود ده مستخدم قبل كده، غيّره.' : 'حصل خطأ: ' + error.message); throw error; } }
 function copy(text){ (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(()=>toast('اتنسخ'), ()=>prompt('انسخ:', text)); }
 
-$('#themeBtn').onclick = () => {
-  const r = document.documentElement;
-  const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  r.dataset.theme = dark ? 'light' : 'dark';
-  try{ localStorage.setItem('ta-theme', r.dataset.theme); }catch(e){}
-};
-try{ const t = localStorage.getItem('ta-theme'); if(t) document.documentElement.dataset.theme = t; }catch(e){}
+const GRADES = ['الصف الأول الابتدائي','الصف الثاني الابتدائي','الصف الثالث الابتدائي','الصف الرابع الابتدائي','الصف الخامس الابتدائي','الصف السادس الابتدائي',
+  'الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'];
+const GRADE_SHORT = ['أولى ابتدائي','تانية ابتدائي','تالتة ابتدائي','رابعة ابتدائي','خامسة ابتدائي','سادسة ابتدائي','أولى إعدادي','تانية إعدادي','تالتة إعدادي'];
+const shortGrade = g => GRADES.includes(g) ? GRADE_SHORT[GRADES.indexOf(g)] : (g||'');
+const DAYS = [['السبت',6],['الأحد',0],['الاثنين',1],['الثلاثاء',2],['الأربعاء',3],['الخميس',4],['الجمعة',5]];
+const fmtTime = t => { let [h,m] = t.split(':').map(Number); const pm = h>=12; h = h%12 || 12; return h+':'+pad(m)+(pm?' م':' ص'); };
+function parseGroup(name){
+  const n = String(name||''), days = DAYS.filter(([d])=>n.includes(d)).map(([,i])=>i);
+  const m = n.match(/(\d{1,2}):(\d{2})\s*(م|ص)/); if(!days.length || !m) return null;
+  let h = +m[1] % 12; if(m[3]==='م') h += 12;
+  return {days, time: pad(h)+':'+m[2]};
+}
+const makeGroup = (grade, days, time) => shortGrade(grade) + ' - ' + DAYS.filter(([,i])=>days.includes(i)).map(([d])=>d).join(' و') + ' ' + fmtTime(time);
+$('#r_grade').innerHTML = '<option value="">اختار الصف</option>' + GRADES.map(g=>`<option>${g}</option>`).join('');
+$('#gradesList').innerHTML = GRADES.map(g=>`<option value="${g}">`).join('');
+const dateKey = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 
 /* ---------- التنقل ---------- */
 const TITLES = {home:'حضور، درجات، وحسابات', parent:'صفحة ولي الأمر', teacher:'لوحة المدرس', register:'تسجيل طالب جديد'};
@@ -329,7 +356,7 @@ $('#dlgCancel').onclick = () => dlg.close();
 
 /* =================== إضافة طالب (ولي الأمر) =================== */
 const regForm = $('#regForm');
-const REG_FIELDS = {name:'اسم الطالب (ثلاثي)', grade:'السنة الدراسية', parent_name:'اسم ولي الأمر', parent_phone:'موبايل ولي الأمر', student_phone:'موبايل الطالب'};
+const REG_FIELDS = {name:'اسم الطالب (ثلاثي)', grade:'الصف الدراسي', parent_name:'اسم ولي الأمر', parent_phone:'موبايل ولي الأمر', student_phone:'موبايل الطالب'};
 const field = n => regForm.elements[n];
 const toLatin = s => String(s||'').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
 const cleanPhone = el => { el.value = toLatin(el.value).replace(/\D/g,'').slice(0,11); };
@@ -424,26 +451,66 @@ async function initTeacher(){
   const {data:{session}} = await sb.auth.getSession();
   if(session) showApp(); else { $('#t-login').hidden = false; $('#t-app').hidden = true; }
 }
+const lockState = () => { try{ return JSON.parse(localStorage.getItem('ta-lock')||'{}'); }catch(e){ return {}; } };
+const saveLock = o => { try{ localStorage.setItem('ta-lock', JSON.stringify(o)); }catch(e){} };
+const toEmail = u => { u = u.trim().toLowerCase(); return u.includes('@') ? u : u + LOGIN_DOMAIN; };
 $('#loginForm').onsubmit = async e => {
-  e.preventDefault(); $('#loginMsg').textContent = 'جاري الدخول…';
-  const user = $('#un').value.trim().toLowerCase();
-  const email = user.includes('@') ? user : user + LOGIN_DOMAIN;
-  const {error} = await sb.auth.signInWithPassword({email, password:$('#pw').value});
-  if(error){ $('#loginMsg').textContent = 'اسم المستخدم أو الباسورد غلط.'; return; }
-  $('#loginMsg').textContent = ''; $('#pw').value = '';
+  e.preventDefault();
+  const L = lockState();
+  if(L.until && Date.now() < L.until){ $('#loginMsg').textContent = `محاولات كتير غلط. استنى ${Math.ceil((L.until-Date.now())/60000)} دقيقة وجرّب تاني.`; return; }
+  $('#loginMsg').textContent = 'جاري الدخول…';
+  const {error} = await sb.auth.signInWithPassword({email:toEmail($('#un').value), password:$('#pw').value});
+  $('#pw').value = '';
+  if(error){
+    const tries = (L.tries||0) + 1;
+    if(tries >= MAX_TRIES){ saveLock({tries:0, until:Date.now()+LOCK_MIN*60000}); $('#loginMsg').textContent = `اتقفل الدخول ${LOCK_MIN} دقايق بسبب محاولات غلط كتير.`; }
+    else { saveLock({tries}); $('#loginMsg').textContent = `اسم المستخدم أو الباسورد غلط. فاضل ${MAX_TRIES-tries} محاولات.`; }
+    return;
+  }
+  saveLock({}); $('#loginMsg').textContent = '';
   showApp();
 };
-$('#logoutBtn').onclick = async () => { await sb.auth.signOut(); clearInterval(refreshTimer); $('#t-app').hidden = true; $('#t-login').hidden = false; };
+async function logout(msg){
+  await sb.auth.signOut(); clearInterval(refreshTimer); dDirty = false;
+  $('#t-app').hidden = true; $('#t-login').hidden = false; $('#un').value = '';
+  if(msg) $('#loginMsg').textContent = msg;
+}
+$('#logoutBtn').onclick = () => logout();
+let idleTimer = null;
+function resetIdle(){
+  clearTimeout(idleTimer);
+  if($('#t-app').hidden) return;
+  idleTimer = setTimeout(() => logout('اتعمل خروج تلقائي بعد ' + IDLE_MIN + ' دقيقة من غير استخدام.'), IDLE_MIN*60000);
+}
+['click','keydown','touchstart','scroll'].forEach(ev => document.addEventListener(ev, resetIdle, {passive:true}));
+$('#pwBtn').onclick = () => openDlg('تغيير الباسورد', `<div class="form-grid">
+    <div style="grid-column:1/-1"><label class="f">الباسورد الحالي</label><input name="cur" type="password" required autocomplete="current-password" dir="ltr"></div>
+    <div><label class="f">الباسورد الجديد</label><input name="n1" type="password" required minlength="8" autocomplete="new-password" dir="ltr"></div>
+    <div><label class="f">اكتبه تاني</label><input name="n2" type="password" required minlength="8" autocomplete="new-password" dir="ltr"></div>
+  </div><p class="small muted">8 حروف على الأقل، وفيه حروف إنجليزي وأرقام.</p><p class="small" id="pwMsg" style="color:var(--bad)"></p>`,
+  async f => {
+    const cur = f.get('cur'), n1 = f.get('n1'), n2 = f.get('n2'), msg = $('#pwMsg');
+    if(n1.length < 8 || !/[a-zA-Z]/.test(n1) || !/\d/.test(n1)){ msg.textContent = 'الباسورد الجديد لازم 8 حروف على الأقل وفيه حروف وأرقام.'; return false; }
+    if(n1 !== n2){ msg.textContent = 'الباسورد الجديد مش متطابق.'; return false; }
+    const {data:{user}} = await sb.auth.getUser();
+    const {error:e1} = await sb.auth.signInWithPassword({email:user.email, password:cur});
+    if(e1){ msg.textContent = 'الباسورد الحالي غلط.'; return false; }
+    const {error:e2} = await sb.auth.updateUser({password:n1});
+    if(e2){ msg.textContent = 'ماتغيرش: ' + e2.message; return false; }
+    toast('اتغير الباسورد');
+  }, 'غيّر الباسورد');
 
 async function showApp(){
   $('#t-login').hidden = true; $('#t-app').hidden = false;
   $('#monthIn').value = $('#monthIn').value || curMonth();
-  $('#examForm').exam_date.value = today();
+  $('#examForm').elements.exam_date.value = today();
   const d = new Date(); d.setMinutes(0,0,0); d.setHours(d.getHours()+1);
-  $('#sesForm').starts_at.value = toLocalInput(d);
+  $('#sesForm').elements.starts_at.value = toLocalInput(d);
+  if(!$('#dDate').value) $('#dDate').value = today();
+  resetIdle();
   await loadAll();
   clearInterval(refreshTimer);
-  refreshTimer = setInterval(() => { if(!$('#v-teacher').hidden && !dlg.open) loadAll(); }, 60000);
+  refreshTimer = setInterval(() => { if(!$('#v-teacher').hidden && !dlg.open && !dDirty) loadAll(); }, 60000);
 }
 async function loadAll(){
   const q = t => sb.from(t).select('*');
@@ -485,8 +552,10 @@ $('#bellBtn').onclick = () => {
 $('#tabs').onclick = e => { const b = e.target.closest('[data-tab]'); if(!b) return; tab = b.dataset.tab; $$('#tabs button').forEach(x=>x.classList.toggle('on', x===b)); $$('[data-pane]').forEach(p=>p.hidden = p.dataset.pane!==tab); renderAll(); };
 function renderAll(){
   $('#groupsList').innerHTML = groups().map(g=>`<option value="${esc(g)}">`).join('');
-  const gsel = $('#stuG'), gv = gsel.value; gsel.innerHTML = '<option value="">كل المواعيد</option>' + groups().map(g=>`<option>${esc(g)}</option>`).join(''); gsel.value = gv;
-  renderBell(); renderDash(); renderStudents(); renderSessions(); renderExams(); renderMoney();
+  const gsel = $('#stuG'), gv = gsel.value;
+  gsel.innerHTML = '<option value="">كل المواعيد</option>' + groups().map(g=>{ const gr = gradeOfGroup(g); return `<option value="${esc(g)}">${esc(g)}${gr && !g.startsWith(shortGrade(gr)) ? ' ('+esc(gr)+')' : ''}</option>`; }).join('');
+  gsel.value = groups().includes(gv) ? gv : '';
+  renderBell(); renderGroups(); renderDash(); renderDailyControls(); if(!dDirty) renderDaily(); renderStudents(); renderSessions(); renderExams(); renderMoney();
 }
 
 function renderDash(){
@@ -516,7 +585,7 @@ function renderStudents(){
   const q = $('#stuQ').value.trim().toLowerCase(), g = $('#stuG').value, m = curMonth();
   const list = enrolled().filter(s => (!g || s.group_name===g) && (!q || [s.name,s.code,s.parent_phone,s.student_phone,s.parent_name].some(v=>String(v||'').toLowerCase().includes(q))));
   if(!enrolled().length){ $('#stuTable').innerHTML = '<div class="panel empty">مفيش طلاب متسجلين لسه. الطلاب الجداد بيظهروا في الجرس 🔔، أو ضيف طالب بنفسك.</div>'; return; }
-  $('#stuTable').innerHTML = `<div class="tablewrap"><table><thead><tr><th>الاسم</th><th>الكود</th><th>السنة</th><th>ميعاد الحصة</th><th>سعر الحصة</th><th>حصص الشهر</th><th>باقي الشهر</th><th>متأخرات</th><th>الحضور</th><th></th></tr></thead><tbody>${
+  $('#stuTable').innerHTML = `<div class="tablewrap"><table><thead><tr><th>الاسم</th><th>الكود</th><th>الصف</th><th>ميعاد الحصة</th><th>سعر الحصة</th><th>حصص الشهر</th><th>باقي الشهر</th><th>متأخرات</th><th>الحضور</th><th></th></tr></thead><tbody>${
     list.map(s=>{ const a=attOf(s.id), r=remFor(s,m), ar=arrears(s); return `<tr${s.active?'':' style="opacity:.55"'}>
       <td><b>${esc(s.name)}</b>${s.active?'':' <span class="pill">موقوف</span>'}</td>
       <td class="code">${esc(s.code)}</td><td>${esc(s.grade||'')}</td><td>${esc(s.group_name||'')}</td>
@@ -590,25 +659,211 @@ function renderMoney(){
 }
 $('#monthIn').onchange = renderMoney;
 
+/* ---------- تسجيل الحضور والدفع ---------- */
+let dDirty = false;
+function guessTime(group){
+  const t = toLatin(group||''), m = t.match(/(\d{1,2})(?::(\d{2}))?/);
+  if(!m) return '16:00';
+  let h = +m[1]; const mi = m[2] || '00';
+  if(h>=1 && h<=11 && !/صباح|الصبح|ص\b|am/i.test(t)) h += 12;
+  if(h>23) h = 16;
+  return pad(h)+':'+mi;
+}
+function dailySession(){
+  const grp = $('#dGroup').value, date = $('#dDate').value;
+  if(!grp || !date) return null;
+  return D.sessions.find(x => x.group_name===grp && dateKey(new Date(x.starts_at))===date) || null;
+}
+function renderDailyControls(){
+  const gSel = $('#dGrade'), gv = gSel.value;
+  const known = [...new Set(active().map(s=>s.grade).filter(Boolean))];
+  const list = [...GRADES.filter(g=>known.includes(g)), ...known.filter(g=>!GRADES.includes(g))];
+  gSel.innerHTML = '<option value="">اختار الصف</option>' + list.map(g=>`<option value="${esc(g)}">${esc(g)} (${active().filter(s=>s.grade===g).length})</option>`).join('');
+  gSel.value = list.includes(gv) ? gv : '';
+  const pSel = $('#dGroup'), pv = pSel.value;
+  const grps = [...new Set(active().filter(s=>s.grade===gSel.value).map(s=>s.group_name).filter(Boolean))].sort();
+  pSel.innerHTML = '<option value="">اختار الحصة</option>' + grps.map(g=>`<option value="${esc(g)}">${esc(g)} (${active().filter(s=>s.grade===gSel.value && s.group_name===g).length})</option>`).join('');
+  pSel.value = grps.includes(pv) ? pv : (grps.length===1 ? grps[0] : '');
+  const dv = $('#dDate').value;
+  $('#dDay').textContent = dv ? new Date(dv+'T12:00').toLocaleDateString(LOC,{weekday:'long', day:'numeric', month:'long'}) : '';
+}
+function renderDaily(){
+  const el = $('#dBody'), g = $('#dGrade').value, grp = $('#dGroup').value, date = $('#dDate').value;
+  dDirty = false;
+  if(!active().length){ el.innerHTML = '<div class="panel empty">مفيش طلاب متسجلين لسه.</div>'; return; }
+  if(!g){ el.innerHTML = '<div class="panel empty">اختار الصف الأول.</div>'; return; }
+  if(!grp){ el.innerHTML = '<div class="panel empty">اختار الحصة.</div>'; return; }
+  if(!date){ el.innerHTML = '<div class="panel empty">اختار اليوم.</div>'; return; }
+  const list = active().filter(s=>s.grade===g && s.group_name===grp).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  const ses = dailySession();
+  $('#dTime').value = ses ? toLocalInput(new Date(ses.starts_at)).slice(11) : guessTime(grp);
+  const att = sid => ses && D.attendance.find(a=>a.session_id===ses.id && a.student_id===sid);
+  const pay = sid => ses && D.payments.find(p=>p.session_id===ses.id && p.student_id===sid);
+  el.innerHTML = `
+    <div class="panel">
+      <div class="row between" style="margin-bottom:10px">
+        <span class="small muted">${ses ? 'الحصة دي متسجلة قبل كده، تقدر تعدّل عليها.' : 'حصة جديدة، هتتسجل لما تدوس حفظ.'}</span>
+        <span class="row" style="gap:6px"><button type="button" class="small" id="dAllIn">الكل حضر</button><button type="button" class="small" id="dAllOut">الكل غاب</button></span>
+      </div>
+      <div class="list" id="dList">${list.map(s=>{
+        const a = att(s.id), p = pay(s.id), rem = remFor(s, curMonth());
+        return `<div class="att${a&&a.present?' on':''}" data-sid="${s.id}">
+          <div><b>${esc(s.name)}</b><div class="small muted">سعر الحصة ${money(s.session_price)}${rem?' · عليه '+money(rem)+' الشهر ده':''}</div></div>
+          <div class="ctrls">
+            <label class="tog"><input type="checkbox" class="pres" ${a&&a.present?'checked':''}> حضر</label>
+            <label class="tog"><input type="checkbox" class="paid" ${p?'checked':''}> دفع</label>
+            <input class="amt" type="number" min="0" step="any" value="${p ? p.amount : (s.session_price||'')}" aria-label="المبلغ">
+          </div></div>`; }).join('')}</div>
+    </div>
+    <div class="totals" id="dTotals"></div>`;
+  $('#dAllIn').onclick = () => { $$('#dList .pres').forEach(c=>c.checked=true); dDirty = true; dailyTotals(); };
+  $('#dAllOut').onclick = () => { $$('#dList .pres').forEach(c=>c.checked=false); dDirty = true; dailyTotals(); };
+  dailyTotals();
+}
+function dailyTotals(){
+  const rows = $$('#dList .att'); let pres=0, paidN=0, paidSum=0, req=0;
+  rows.forEach(r => {
+    const s = stuById(r.dataset.sid), p = r.querySelector('.pres').checked, d = r.querySelector('.paid').checked, amt = +r.querySelector('.amt').value || 0;
+    r.classList.toggle('on', p);
+    if(p){ pres++; req += +s.session_price || 0; }
+    if(d){ paidN++; paidSum += amt; }
+  });
+  const box = $('#dTotals'); if(!box) return;
+  box.innerHTML = `<div class="grid">
+      <div><div class="t">الطلاب</div><div class="n">${rows.length}</div></div>
+      <div><div class="t">حضروا</div><div class="n" style="color:var(--ok)">${pres}</div></div>
+      <div><div class="t">غابوا</div><div class="n" style="color:var(--bad)">${rows.length-pres}</div></div>
+      <div><div class="t">دفعوا</div><div class="n">${paidN}</div></div>
+      <div><div class="t">إجمالي المدفوع</div><div class="n">${money(paidSum)}</div></div>
+      <div><div class="t">حساب الحضور</div><div class="n">${money(req)}</div></div>
+    </div>
+    <button class="primary" type="button" id="dSave" style="width:100%">حفظ الحضور والدفع</button>`;
+  $('#dSave').onclick = saveDaily;
+}
+$('#dBody').addEventListener('input', e => {
+  if(e.target.classList.contains('amt')){ const r = e.target.closest('.att'); if(+e.target.value>0) r.querySelector('.paid').checked = true; }
+  dDirty = true; dailyTotals();
+});
+$('#dBody').addEventListener('change', () => { dDirty = true; dailyTotals(); });
+function dailyChange(){
+  if(dDirty && !confirm('فيه تعديلات ماتحفظتش، تكمّل من غير حفظ؟')) return false;
+  dDirty = false; renderDailyControls(); renderDaily(); return true;
+}
+$('#dGrade').onchange = () => { $('#dGroup').value = ''; dailyChange(); };
+$('#dGroup').onchange = dailyChange;
+$('#dDate').onchange = dailyChange;
+async function saveDaily(){
+  const grp = $('#dGroup').value, date = $('#dDate').value, time = $('#dTime').value || guessTime(grp);
+  const btn = $('#dSave'); btn.disabled = true; btn.textContent = 'جاري الحفظ…';
+  try{
+    let ses = dailySession();
+    const startsAt = new Date(date+'T'+time).toISOString();
+    if(!ses){
+      const {data, error} = await sb.from('sessions').insert({group_name:grp, starts_at:startsAt, duration_min:90}).select().single();
+      check(error); ses = data;
+    } else if(toLocalInput(new Date(ses.starts_at)).slice(11) !== time){
+      check((await sb.from('sessions').update({starts_at:startsAt}).eq('id', ses.id)).error);
+    }
+    const rows = $$('#dList .att').map(r => ({sid:r.dataset.sid, pres:r.querySelector('.pres').checked, paid:r.querySelector('.paid').checked, amt:+r.querySelector('.amt').value || 0}));
+    check((await sb.from('attendance').upsert(rows.map(r=>({session_id:ses.id, student_id:r.sid, present:r.pres})), {onConflict:'session_id,student_id'})).error);
+    const ups = rows.filter(r=>r.paid && r.amt>0).map(r=>({session_id:ses.id, student_id:r.sid, amount:r.amt, month:date.slice(0,7), paid_at:date, note:'حصة '+date}));
+    if(ups.length) check((await sb.from('payments').upsert(ups, {onConflict:'session_id,student_id'})).error);
+    const dels = rows.filter(r=>!(r.paid && r.amt>0)).map(r=>r.sid);
+    if(dels.length) check((await sb.from('payments').delete().eq('session_id', ses.id).in('student_id', dels)).error);
+    const pres = rows.filter(r=>r.pres).length, sum = ups.reduce((t,r)=>t+r.amt,0);
+    toast(`اتحفظ: حضر ${pres} من ${rows.length}، واتدفع ${money(sum)}`);
+    dDirty = false; await loadAll();
+  }catch(err){ console.error(err); btn.disabled = false; btn.textContent = 'حفظ الحضور والدفع'; }
+}
+
+/* ---------- المواعيد ---------- */
+function groupPickerHTML(grade, current){
+  const existing = [...new Set(enrolled().filter(s=>s.grade===grade && s.group_name).map(s=>s.group_name))].sort();
+  const opts = existing.map(g=>`<option value="${esc(g)}" ${g===current?'selected':''}>${esc(g)}</option>`).join('');
+  const isNew = !current || !existing.includes(current);
+  return `<div style="grid-column:1/-1"><label class="f">ميعاد الحصة</label>
+      <select name="gpick">${opts}<option value="__new" ${isNew?'selected':''}>+ ميعاد جديد</option></select></div>
+    <div class="gnew" style="grid-column:1/-1" ${isNew?'':'hidden'}>
+      <label class="f">الأيام</label>
+      <div class="days">${DAYS.map(([d,i])=>`<label><input type="checkbox" name="day" value="${i}"> ${d}</label>`).join('')}</div>
+      <div style="margin-top:8px;max-width:200px"><label class="f">الساعة</label><input name="gtime" type="time" value="16:00"></div>
+    </div>`;
+}
+function wireGroupPicker(form, gradeGetter){
+  const sel = form.elements.gpick, box = form.querySelector('.gnew');
+  sel.onchange = () => { box.hidden = sel.value !== '__new'; };
+  if(gradeGetter && form.elements.grade) form.elements.grade.onchange = () => {
+    const wrap = form.querySelector('.gwrap'); wrap.innerHTML = groupPickerHTML(form.elements.grade.value, ''); wireGroupPicker(form, gradeGetter);
+  };
+}
+function readGroup(form, grade){
+  const v = form.elements.gpick.value;
+  if(v !== '__new') return {group:v, ...(parseGroup(v)||{})};
+  const days = [...form.querySelectorAll('input[name=day]:checked')].map(c=>+c.value), time = form.elements.gtime.value;
+  if(!days.length || !time) return null;
+  return {group:makeGroup(grade, days, time), days, time};
+}
+async function ensureSessions(group, days, time, weeks=8){
+  if(!group || !days || !days.length || !time) return 0;
+  const rows = [], start = new Date(); start.setHours(0,0,0,0);
+  for(let i=0;i<weeks*7;i++){
+    const d = new Date(start); d.setDate(start.getDate()+i);
+    if(!days.includes(d.getDay())) continue;
+    const key = dateKey(d);
+    if(D.sessions.some(x=>x.group_name===group && dateKey(new Date(x.starts_at))===key)) continue;
+    rows.push({group_name:group, starts_at:new Date(key+'T'+time).toISOString(), duration_min:90});
+  }
+  if(rows.length) check((await sb.from('sessions').insert(rows)).error);
+  return rows.length;
+}
+function gradeOfGroup(g){ const s = enrolled().find(x=>x.group_name===g); return s ? s.grade : ''; }
+function openDaily(group, date){
+  if(dDirty && !confirm('فيه تعديلات ماتحفظتش في تسجيل الحضور، تكمّل؟')) return;
+  dDirty = false;
+  $(`#tabs [data-tab="daily"]`).click();
+  $('#dGrade').value = gradeOfGroup(group); renderDailyControls();
+  $('#dGroup').value = group; $('#dDate').value = date || today();
+  renderDailyControls(); renderDaily(); scrollTo(0,0);
+}
+function renderGroups(){
+  const el = $('#groupList'); if(!el) return;
+  const gs = groups();
+  if(!gs.length){ el.innerHTML = '<div class="empty">مفيش مواعيد لسه. الميعاد بيتعمل لما تسجّل طالب من الجرس 🔔.</div>'; return; }
+  const now = new Date();
+  el.innerHTML = gs.map(g=>{
+    const n = active().filter(s=>s.group_name===g).length, next = D.sessions.find(x=>x.group_name===g && new Date(x.starts_at) >= new Date(now - 3*36e5));
+    return `<div class="item"><span><b>${esc(g)}</b><br><span class="small muted">${esc(gradeOfGroup(g))} · ${n} طالب · ${next ? 'الحصة الجاية: '+fmtDT(next.starts_at) : 'مفيش حصص جاية'}</span></span>
+      <span class="row"><button class="icon" type="button" data-act="openDailyG" data-id="${esc(g)}">✓ حضور النهارده</button>
+      ${parseGroup(g) ? `<button class="icon" type="button" data-act="extendG" data-id="${esc(g)}">＋ 8 أسابيع</button>` : ''}</span></div>`;
+  }).join('');
+}
+
 /* ---------- الأوامر ---------- */
 const ACT = {
+  openDailyG: g => openDaily(g, today()),
+  async extendG(g){ const p = parseGroup(g); const n = await ensureSessions(g, p.days, p.time); toast(n ? `اتضافت ${n} حصة` : 'الحصص موجودة بالفعل'); await loadAll(); },
   approve(id){
     const s = stuById(id); if(!s) return;
     openDlg('تسجيل ' + s.name, `<div class="list" style="margin-bottom:12px">
-        <div class="item"><span class="muted small">السنة</span><span>${esc(s.grade||'')}</span></div>
+        <div class="item"><span class="muted small">الصف</span><span>${esc(s.grade||'')}</span></div>
         <div class="item"><span class="muted small">ولي الأمر</span><span>${esc(s.parent_name||'')} · <span dir="ltr">${esc(s.parent_phone||'')}</span></span></div>
         <div class="item"><span class="muted small">موبايل الطالب</span><span dir="ltr">${esc(s.student_phone||'')}</span></div>
         <div class="item"><span class="muted small">الكود</span><span class="code">${esc(s.code)}</span></div>
       </div>
       <div class="form-grid">
-        <div><label class="f">ميعاد الحصة</label><input name="group_name" list="groupsList" required placeholder="مثلاً: السبت والثلاثاء 4 العصر"></div>
+        <div class="gwrap" style="grid-column:1/-1;display:grid;gap:10px">${groupPickerHTML(s.grade, '')}</div>
         <div><label class="f">سعر الحصة (جنيه)</label><input name="session_price" type="number" min="0" step="any" required></div>
       </div>
-      <p class="small muted">لو الميعاد موجود قبل كده اختاره من القايمة بنفس الكتابة، عشان الطالب يظهر في حضور الحصص دي.</p>`,
-      async f => {
-        const {error} = await sb.from('students').update({status:'active', group_name:f.get('group_name').trim(), session_price:+f.get('session_price')||0}).eq('id', id);
-        check(error); toast('اتسجل ' + s.name + ' على البرنامج'); await loadAll();
+      <p class="small" id="apMsg" style="color:var(--bad)"></p>`,
+      async (f, form) => {
+        const g = readGroup(form, s.grade);
+        if(!g){ $('#apMsg').textContent = 'اختار يوم واحد على الأقل والساعة.'; return false; }
+        const {error} = await sb.from('students').update({status:'active', group_name:g.group, session_price:+f.get('session_price')||0}).eq('id', id);
+        check(error);
+        const n = await ensureSessions(g.group, g.days, g.time);
+        toast('اتسجل ' + s.name + (n ? ` واتعمل ${n} حصة جاية` : '')); await loadAll();
       }, 'تسجيل الطالب');
+    wireGroupPicker($('#dlgForm'));
   },
   newStu: () => stuForm(null),
   editStu: id => stuForm(stuById(id)),
@@ -633,23 +888,7 @@ const ACT = {
       async f => { check((await sb.from('payments').insert({student_id:f.get('student_id'), amount:+f.get('amount'), month:f.get('month'), paid_at:f.get('paid_at'), note:f.get('note').trim()||null})).error); toast('اتسجل الدفع'); await loadAll(); });
   },
   async delPay(id){ if(!confirm('حذف الدفعة دي؟')) return; check((await sb.from('payments').delete().eq('id',id)).error); await loadAll(); },
-  att(id){
-    const ses = sesMap[id];
-    const list = active().filter(s=>s.group_name===ses.group_name);
-    const extra = D.attendance.filter(a=>a.session_id===id && !list.some(s=>s.id===a.student_id)).map(a=>stuById(a.student_id)).filter(Boolean);
-    const all = [...list, ...extra];
-    if(!all.length){ toast('مفيش طلاب في ميعاد «'+ses.group_name+'». اكتب نفس الميعاد في بيانات الطالب.'); return; }
-    const rec = sid => D.attendance.find(a=>a.session_id===id && a.student_id===sid);
-    openDlg('حضور ' + ses.group_name, `<p class="small muted" style="margin-top:0">${fmtDT(ses.starts_at)}</p>
-      <div class="row" style="margin-bottom:6px"><button type="button" class="small" id="allIn">الكل حاضر</button><button type="button" class="small" id="allOut">الكل غايب</button></div>
-      ${all.map(s=>{const r=rec(s.id); return `<label class="check-row"><span>${esc(s.name)}</span><input type="checkbox" name="p_${s.id}" ${!r||r.present?'checked':''}></label>`}).join('')}`,
-      async (f, form) => {
-        const rows = all.map(s=>({session_id:id, student_id:s.id, present:!!form['p_'+s.id].checked}));
-        check((await sb.from('attendance').upsert(rows, {onConflict:'session_id,student_id'})).error); toast('اتسجل الحضور'); await loadAll();
-      }, 'حفظ الحضور');
-    $('#allIn').onclick = () => $$('#dlgBody input[type=checkbox]').forEach(c=>c.checked=true);
-    $('#allOut').onclick = () => $$('#dlgBody input[type=checkbox]').forEach(c=>c.checked=false);
-  },
+  att(id){ const ses = sesMap[id]; if(ses) openDaily(ses.group_name, dateKey(new Date(ses.starts_at))); },
   async delSes(id){ if(!confirm('حذف الحصة دي وحضورها؟')) return; check((await sb.from('sessions').delete().eq('id',id)).error); await loadAll(); },
   grades(id){
     const ex = D.exams.find(x=>x.id===id);
@@ -671,24 +910,31 @@ const ACT = {
 document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if(b && ACT[b.dataset.act]) ACT[b.dataset.act](b.dataset.id); });
 
 function stuForm(s){
+  const grade = s?.grade || '';
   openDlg(s ? 'تعديل بيانات الطالب' : 'طالب جديد', `<div class="form-grid">
     <div style="grid-column:1/-1"><label class="f">اسم الطالب</label><input name="name" required value="${esc(s?.name)}"></div>
     <div><label class="f">كود الطالب</label><div class="row" style="flex-wrap:nowrap"><input name="code" class="code" required value="${esc(s?.code || genCode())}"><button type="button" class="icon" id="regen" title="كود جديد">↻</button></div></div>
-    <div><label class="f">السنة الدراسية</label><input name="grade" list="gradesList" value="${esc(s?.grade)}"></div>
+    <div><label class="f">الصف الدراسي</label><select name="grade" required><option value="">اختار الصف</option>${[...GRADES, ...(grade && !GRADES.includes(grade) ? [grade] : [])].map(g=>`<option ${g===grade?'selected':''}>${esc(g)}</option>`).join('')}</select></div>
     <div><label class="f">اسم ولي الأمر</label><input name="parent_name" value="${esc(s?.parent_name)}"></div>
     <div><label class="f">موبايل ولي الأمر</label><input name="parent_phone" type="tel" value="${esc(s?.parent_phone)}" placeholder="01xxxxxxxxx"></div>
     <div><label class="f">موبايل الطالب</label><input name="student_phone" type="tel" value="${esc(s?.student_phone)}" placeholder="01xxxxxxxxx"></div>
-    <div><label class="f">ميعاد الحصة</label><input name="group_name" list="groupsList" required value="${esc(s?.group_name)}" placeholder="مثلاً: السبت والثلاثاء 4 العصر"></div>
     <div><label class="f">سعر الحصة (جنيه)</label><input name="session_price" type="number" min="0" step="any" value="${s ? s.session_price : ''}" required></div>
+    <div class="gwrap" style="grid-column:1/-1;display:grid;gap:10px">${groupPickerHTML(grade, s?.group_name)}</div>
     <div style="grid-column:1/-1"><label class="f">ملاحظات</label><textarea name="notes" rows="2">${esc(s?.notes)}</textarea></div>
     ${s ? `<label class="check-row" style="grid-column:1/-1"><span>الطالب لسه بيحضر</span><input type="checkbox" name="active" ${s.active?'checked':''}></label>` : ''}
-  </div>`, async (f, form) => {
-    const obj = {name:f.get('name').trim(), code:f.get('code').trim().toUpperCase(), grade:f.get('grade').trim()||null, parent_name:f.get('parent_name').trim()||null, parent_phone:f.get('parent_phone').trim()||null, student_phone:f.get('student_phone').trim()||null, group_name:f.get('group_name').trim()||null, session_price:+f.get('session_price')||0, notes:f.get('notes').trim()||null};
-    if(s) obj.active = !!form.active.checked;
+  </div><p class="small" id="sfMsg" style="color:var(--bad)"></p>`, async (f, form) => {
+    const gr = f.get('grade'), g = readGroup(form, gr);
+    if(!gr){ $('#sfMsg').textContent = 'اختار الصف.'; return false; }
+    if(!g){ $('#sfMsg').textContent = 'اختار ميعاد موجود، أو حدد أيام وساعة الميعاد الجديد.'; return false; }
+    const obj = {name:f.get('name').trim(), code:f.get('code').trim().toUpperCase(), grade:gr, parent_name:f.get('parent_name').trim()||null, parent_phone:f.get('parent_phone').trim()||null, student_phone:f.get('student_phone').trim()||null, group_name:g.group, session_price:+f.get('session_price')||0, notes:f.get('notes').trim()||null};
+    if(s) obj.active = !!form.elements.active.checked;
     const {error} = s ? await sb.from('students').update(obj).eq('id', s.id) : await sb.from('students').insert({...obj, status:'active'});
-    check(error); toast(s ? 'اتحفظت التعديلات' : 'اتضاف الطالب'); await loadAll();
+    check(error);
+    await ensureSessions(g.group, g.days, g.time);
+    toast(s ? 'اتحفظت التعديلات' : 'اتضاف الطالب'); await loadAll();
   });
-  $('#regen').onclick = () => { $('#dlgForm').code.value = genCode(); };
+  wireGroupPicker($('#dlgForm'), true);
+  $('#regen').onclick = () => { $('#dlgForm').elements.code.value = genCode(); };
 }
 
 /* ---------- البداية ---------- */
