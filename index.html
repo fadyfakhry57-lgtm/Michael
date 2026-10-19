@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>متابعة الطلاب</title>
+<title>Mr.Michael | متابعة الطلاب</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,9 +39,10 @@ label.f{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
 .brand{display:flex;align-items:center;gap:10px}
-.brand .mark{width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:1.2rem}
+.brand .mark{width:48px;height:48px;padding:0;border-radius:14px;background:var(--accent);border:2px solid var(--accent-2);display:grid;place-items:center;font-size:1.6rem;line-height:1;cursor:pointer}
+#langBtn{min-width:44px;font-weight:700;letter-spacing:.04em}
 .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:20px}
-.choice{text-align:right;padding:22px;border-radius:16px;background:var(--surface);border:1px solid var(--line);border-inline-start:4px solid var(--accent);font-size:1rem}
+.choice{text-align:start;padding:22px;border-radius:16px;background:var(--surface);border:1px solid var(--line);border-inline-start:4px solid var(--accent);font-size:1rem}
 .choice b{display:block;font-size:1.25rem;margin-bottom:4px}
 .choice span{color:var(--muted);font-weight:400}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
@@ -56,7 +57,7 @@ label.f{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}
 .tabs button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 table{border-collapse:collapse;width:100%;font-size:.86rem}
-th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap}
 th{background:var(--soft);font-weight:600}
 tr:last-child td{border-bottom:none}
 tfoot td{font-weight:700;background:var(--soft)}
@@ -77,7 +78,7 @@ tfoot td{font-weight:700;background:var(--soft)}
 .bell{position:relative;font-size:1.1rem}
 .badge{position:absolute;top:-7px;left:-7px;background:var(--bad);color:#fff;border-radius:999px;font-size:.7rem;min-width:19px;height:19px;display:grid;place-items:center;padding:0 5px}
 .codebox{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:2.3rem;font-weight:700;letter-spacing:.15em;text-align:center;padding:16px;border:2px dashed var(--accent);border-radius:14px;margin:12px 0;color:var(--accent)}
-.pend{width:100%;text-align:right;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pend{width:100%;text-align:start;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .att{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
 .att.on{border-color:var(--ok)}
 .att .ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
@@ -105,8 +106,9 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
 <body>
 <div class="wrap">
   <div class="top">
-    <div class="brand"><div class="mark">✎</div><div><h1>متابعة الطلاب</h1><div class="small muted" id="subTitle">حضور، درجات، وحسابات</div></div></div>
+    <div class="brand"><button class="mark" id="teacherBtn" type="button" aria-label="دخول المدرس" title="دخول المدرس">👨‍🏫</button><h1 dir="ltr">Mr.Michael</h1></div>
     <div class="row noprint">
+      <button id="langBtn" type="button" class="icon" aria-label="English / عربي">EN</button>
       <button id="homeBtn" type="button" hidden>الرئيسية</button>
     </div>
   </div>
@@ -114,7 +116,6 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
   <!-- HOME -->
   <section id="v-home">
     <div class="choices">
-      <button class="choice" type="button" data-go="teacher"><b dir="ltr" style="text-align:right">Mr.Michael Fakhry</b><span>دخول المدرس</span></button>
       <button class="choice" type="button" data-go="parent"><b>ولي الأمر</b><span>متابعة الطالب بالكود: الحضور والدرجات والحساب.</span></button>
       <button class="choice" type="button" data-go="register"><b>إضافة طالب</b><span>سجّل بيانات طالب جديد وخد الكود بتاعه.</span></button>
     </div>
@@ -153,7 +154,7 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
     <div class="panel">
       <h2>متابعة الطالب</h2>
       <form id="codeForm" class="row">
-        <div class="grow"><input id="codeIn" class="code" placeholder="اكتب كود الطالب" autocomplete="off" required></div>
+        <div class="grow"><input id="codeIn" class="code" placeholder="اكتب كود الطالب (4 أرقام)" autocomplete="off" inputmode="numeric" maxlength="6" required></div>
         <button class="primary" type="submit">اعرض البيانات</button>
       </form>
       <p class="small muted" id="parentMsg" style="margin:8px 0 0">الكود بياخده ولي الأمر من المدرس.</p>
@@ -164,7 +165,7 @@ dialog form{padding:16px;max-height:86vh;overflow-y:auto}
   <!-- TEACHER -->
   <section id="v-teacher" hidden>
     <div id="t-login" class="panel" hidden>
-      <h2 dir="ltr" style="text-align:right">Mr.Michael Fakhry</h2>
+      <h2 dir="ltr" style="text-align:start">Mr.Michael Fakhry</h2>
       <form id="loginForm" class="form-grid">
         <div><label class="f" for="un">اسم المستخدم</label><input id="un" required autocomplete="off" autocapitalize="none" spellcheck="false" dir="ltr"></div>
         <div><label class="f" for="pw">الباسورد</label><input id="pw" type="password" required autocomplete="current-password" dir="ltr"></div>
@@ -287,11 +288,13 @@ let sesMap = {}, tab = 'dash', refreshTimer = null;
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num = n => Number(n || 0).toLocaleString('en-US');
-const money = n => num(n) + ' ج';
+const money = n => num(n) + (LANG==='en' ? ' EGP' : ' ج');
 const pad = n => String(n).padStart(2,'0');
 const monthKey = d => d.getFullYear() + '-' + pad(d.getMonth()+1);
 const curMonth = () => monthKey(new Date());
-const LOC = 'ar-EG-u-nu-latn';
+let LANG = (()=>{ try{ return localStorage.getItem('ta-lang')||'ar'; }catch(e){ return 'ar'; } })();
+let LOC = LANG==='en' ? 'en-GB' : 'ar-EG-u-nu-latn';
+let lastReport = null;
 const fmtDT = iso => { const d = new Date(iso); return d.toLocaleDateString(LOC,{weekday:'long',day:'numeric',month:'long'}) + '، ' + d.toLocaleTimeString(LOC,{hour:'numeric',minute:'2-digit'}); };
 const fmtD = d => new Date(d).toLocaleDateString(LOC,{day:'numeric',month:'short',year:'numeric'});
 const monthName = k => { const [y,m] = k.split('-'); return new Date(+y, m-1, 1).toLocaleDateString(LOC,{month:'long',year:'numeric'}); };
@@ -299,7 +302,7 @@ const sameDay = (a,b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.g
 function monthsFrom(startKey, endKey){ const out=[]; let [y,m]=startKey.split('-').map(Number); const [ey,em]=endKey.split('-').map(Number); while(y<ey || (y===ey && m<=em)){ out.push(y+'-'+pad(m)); m++; if(m>12){m=1;y++;} if(out.length>120) break; } return out; }
 const toLocalInput = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
 const today = () => { const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); };
-function genCode(){ const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; const r=crypto.getRandomValues(new Uint32Array(6)); r.forEach(x=>s+=a[x%a.length]); return s; }
+function genCode(){ const used = new Set(D.students.map(s=>s.code)); let c; do{ c = String(1000 + crypto.getRandomValues(new Uint32Array(1))[0] % 9000); }while(used.has(c)); return c; }
 function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), 3200); }
 function check(error){ if(error){ toast(error.code==='23505' ? 'الكود ده مستخدم قبل كده، غيّره.' : 'حصل خطأ: ' + error.message); throw error; } }
 function copy(text){ (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(()=>toast('اتنسخ'), ()=>prompt('انسخ:', text)); }
@@ -321,12 +324,122 @@ $('#r_grade').innerHTML = '<option value="">اختار الصف</option>' + GRAD
 $('#gradesList').innerHTML = GRADES.map(g=>`<option value="${g}">`).join('');
 const dateKey = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 
+/* ---------- اللغة (عربي / English) ---------- */
+const EN = {
+'الرئيسية':'Home','ولي الأمر':'Parent','إضافة طالب':'Add student','دخول المدرس':'Teacher login','حضور، درجات، وحسابات':'Attendance, grades & payments',
+'متابعة الطالب بالكود: الحضور والدرجات والحساب.':'Follow a student with their code: attendance, grades and payments.',
+'سجّل بيانات طالب جديد وخد الكود بتاعه.':'Register a new student and get their code.',
+'تسجيل طالب جديد':'Register a new student','املا كل البيانات، وبعد الحفظ هيظهرلك كود الطالب.':'Fill in all the details. After saving you will get the student code.',
+'اسم الطالب (ثلاثي)':'Student full name','الصف الدراسي':'Grade','اختار الصف':'Choose grade','اسم ولي الأمر':'Parent name','موبايل ولي الأمر':'Parent mobile','موبايل الطالب':'Student mobile',
+'رقم موبايل 11 رقم يبدأ بـ 01':'11-digit mobile starting with 01','حفظ':'Save','كمّل البيانات دي:':'Please complete:','الموبايل 11 رقم ويبدأ بـ 01':'mobile must be 11 digits starting with 01',
+'جاري الحفظ…':'Saving…','رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.':'Mobile number must be 11 digits starting with 01.','البيانات ماتحفظتش، راجعها وجرّب تاني.':'Not saved. Check the details and try again.',
+'اتسجل الطالب بنجاح':'Student registered','ده كود':'This is the code for','احتفظ بيه، هتدخل بيه بعد كده على صفحة ولي الأمر:':'Keep it. You will use it on the parent page:',
+'المدرس هيأكد التسجيل ويحدد ميعاد الحصة، وبعدها هتلاقي كل البيانات بالكود ده.':'The teacher will confirm and set the class time. Then all details will show with this code.',
+'انسخ الكود':'Copy code','افتح صفحة ولي الأمر':'Open parent page','سجّل طالب تاني':'Register another student','اتنسخ':'Copied','انسخ:':'Copy:',
+'متابعة الطالب':'Student follow-up','اكتب كود الطالب (4 أرقام)':'Enter student code (4 digits)','اعرض البيانات':'Show details','الكود بياخده ولي الأمر من المدرس.':'Parents get the code from the teacher.',
+'جاري البحث…':'Searching…','حصل خطأ في الاتصال، جرّب تاني.':'Connection error, try again.','الكود ده مش موجود. اتأكد منه مع المدرس.':'Code not found. Check it with the teacher.',
+'محاولات كتير بأكواد غلط. استنى ربع ساعة وجرّب تاني.':'Too many wrong codes. Wait 15 minutes and try again.','آخر تحديث:':'Last updated:',
+'التسجيل وصل للمدرس، ومستني يأكده ويحدد ميعاد الحصة. ارجع للصفحة دي بعد شوية بنفس الكود':'Registration received. Waiting for the teacher to confirm and set the class time. Come back later with the same code',
+'ميعاد الحصة:':'Class time:','الكود':'Code','الحضور':'Attendance','من الحصص':'of sessions','لسه مفيش حصص متسجلة':'No sessions recorded yet','سعر الحصة':'Session price',
+'حصص الشهر ده':'Sessions this month','المطلوب':'Due','اتدفع الشهر ده':'Paid this month','باقي الشهر ده':'Left this month','إجمالي المتأخرات':'Total overdue','متوسط الدرجات':'Average grade',
+'الحصص الجاية':'Upcoming sessions','دقيقة':'min','مفيش حصص جاية متسجلة.':'No upcoming sessions.','الدرجات':'Grades','الامتحان':'Exam','التاريخ':'Date','الدرجة':'Score','النسبة':'Percent',
+'مفيش درجات لسه.':'No grades yet.','الحساب بالشهر':'Monthly account','الشهر':'Month','الحصص':'Sessions','المدفوع':'Paid','الباقي':'Left','مفيش حسابات.':'No records.',
+'سجل الحضور':'Attendance log','حضر':'Present','غاب':'Absent','لسه مفيش حضور متسجل.':'No attendance yet.',
+'اسم المستخدم':'Username','الباسورد':'Password','دخول':'Log in','جاري الدخول…':'Logging in…','محاولات كتير غلط. استنى':'Too many wrong attempts. Wait','دقيقة وجرّب تاني.':'minute(s) and try again.',
+'اتقفل الدخول':'Login locked for','دقايق بسبب محاولات غلط كتير.':'minutes after too many wrong attempts.','اسم المستخدم أو الباسورد غلط. فاضل':'Wrong username or password. Attempts left:','محاولات.':'',
+'اتعمل خروج تلقائي بعد':'Logged out automatically after','دقيقة من غير استخدام.':'minutes of inactivity.',
+'تسجيل الحضور':'Take attendance','الطلاب':'Students','الحصص والحضور':'Sessions','الامتحانات':'Exams','الحسابات':'Payments','طلاب جداد':'New students','تغيير الباسورد':'Change password','خروج':'Log out',
+'الباسورد الحالي':'Current password','الباسورد الجديد':'New password','اكتبه تاني':'Repeat it','حروف على الأقل، وفيه حروف إنجليزي وأرقام.':'characters minimum, with letters and numbers.',
+'الباسورد الجديد لازم 8 حروف على الأقل وفيه حروف وأرقام.':'New password must be 8+ characters with letters and numbers.','الباسورد الجديد مش متطابق.':'New passwords do not match.',
+'الباسورد الحالي غلط.':'Current password is wrong.','ماتغيرش:':'Not changed:','اتغير الباسورد':'Password changed','غيّر الباسورد':'Change password',
+'تسجيل الحضور والدفع':'Attendance & payment','الصف':'Grade','الحصة':'Session','اختار الحصة':'Choose session','اليوم':'Day','الساعة':'Time',
+'مفيش طلاب متسجلين لسه.':'No registered students yet.','اختار الصف الأول.':'Choose a grade first.','اختار الحصة.':'Choose a session.','اختار اليوم.':'Choose a day.',
+'الحصة دي متسجلة قبل كده، تقدر تعدّل عليها.':'This session was saved before, you can edit it.','حصة جديدة، هتتسجل لما تدوس حفظ.':'New session, it will be created when you save.',
+'الكل حضر':'All present','الكل غاب':'All absent','دفع':'Paid','عليه':'owes','الشهر ده':'this month','المبلغ':'Amount','حضروا':'Present','غابوا':'Absent','دفعوا':'Paid',
+'إجمالي المدفوع':'Total paid','حساب الحضور':'Attendance total','حفظ الحضور والدفع':'Save attendance & payments','اتحفظ: حضر':'Saved: present','، واتدفع':', paid',
+'فيه تعديلات ماتحفظتش، تكمّل من غير حفظ؟':'You have unsaved changes. Continue without saving?','فيه تعديلات ماتحفظتش في تسجيل الحضور، تكمّل؟':'Unsaved attendance changes. Continue?',
+'ابحث بالاسم أو الكود أو التليفون':'Search by name, code or phone','كل المواعيد':'All class times','+ طالب جديد':'+ New student','طالب جديد':'New student',
+'الاسم':'Name','ميعاد الحصة':'Class time','حصص الشهر':'Sessions (month)','باقي الشهر':'Left (month)','متأخرات':'Overdue','موقوف':'Stopped','مفيش نتايج.':'No results.',
+'مفيش طلاب متسجلين لسه. الطلاب الجداد بيظهروا في الجرس 🔔، أو ضيف طالب بنفسك.':'No students yet. New students appear under the bell 🔔, or add one yourself.',
+'ابعت الكود لولي الأمر':'Send code to parent','تعديل':'Edit','حذف':'Delete',
+'المواعيد':'Class times','إضافة حصة يدوي':'Add session manually','ميعاد الحصة (المجموعة)':'Class time (group)','عنوان الحصة (اختياري)':'Session title (optional)','الميعاد':'Date & time',
+'المدة (دقيقة)':'Duration (min)','كررها كل أسبوع لمدة':'Repeat weekly for','مرة واحدة':'Once','4 أسابيع':'4 weeks','8 أسابيع':'8 weeks','12 أسبوع':'12 weeks','أضف الحصة':'Add session',
+'الحصص اللي فاتت':'Past sessions','مفيش حصص جاية.':'No upcoming sessions.','مفيش حصص فاتت.':'No past sessions.','حضر':'Present','من':'of','طالب':'students',
+'مثلاً: السبت والثلاثاء 4 العصر':'e.g. Saturday & Tuesday 4 PM','مثلاً: الباب الأول':'e.g. Chapter 1','اتضافت الحصة':'Session added','اتضافت':'Added','حصص':'sessions',
+'مفيش مواعيد لسه. الميعاد بيتعمل لما تسجّل طالب من الجرس 🔔.':'No class times yet. A class time is created when you register a student from the bell 🔔.',
+'الحصة الجاية:':'Next session:','مفيش حصص جاية':'No upcoming sessions','حضور النهارده':'Today’s attendance','＋ 8 أسابيع':'＋ 8 weeks','اتضافت':'Added','حصة':'session(s)','الحصص موجودة بالفعل':'Sessions already exist',
+'إضافة امتحان':'Add exam','اسم الامتحان':'Exam name','مثلاً: امتحان الشهر':'e.g. Monthly exam','الدرجة النهائية':'Full mark','ميعاد الحصة (فاضي = الكل)':'Class time (empty = all)','أضف الامتحان':'Add exam',
+'مفيش امتحانات لسه.':'No exams yet.','لسه مفيش درجات':'No grades yet','متوسط':'average','الدرجات':'Grades','📝 الدرجات':'📝 Grades','اتضاف الامتحان':'Exam added',
+'سيب الخانة فاضية لو الطالب ماامتحنش':'leave empty if the student did not take it','حفظ الدرجات':'Save grades','اتسجلت الدرجات':'Grades saved','مفيش طلاب للامتحان ده.':'No students for this exam.',
+'+ تسجيل دفع':'+ Record payment','تسجيل دفع':'Record payment','حسب الحصص اللي الطلاب حضروها':'based on sessions attended','اتحصّل':'Collected','نسبة التحصيل':'Collection rate',
+'آخر 6 شهور':'Last 6 months','العمود كله = المطلوب، والجزء الملوّن = اللي اتحصّل.':'Full bar = due, colored part = collected.','حساب كل طالب':'Per-student account','الطالب':'Student',
+'خالص':'Paid up','💵 دفع':'💵 Pay','الإجمالي':'Total','مفيش حسابات للشهر ده.':'No records this month.','المدفوعات المسجلة في الشهر':'Payments this month','مفيش مدفوعات متسجلة.':'No payments recorded.',
+'المطلوب في':'Due in','عن شهر':'For month','تاريخ الدفع':'Payment date','ملاحظة':'Note','اختار':'Choose','اتسجل الدفع':'Payment recorded','حذف الدفعة دي؟':'Delete this payment?',
+'تحصيل':'Collected','باقي الشهر':'Left this month','حصص النهارده':'Today’s sessions','مفيش حصص النهارده.':'No sessions today.','عليهم فلوس الشهر ده':'Owing this month','كل الحسابات':'All payments',
+'مفيش فلوس متأخرة الشهر ده 👌':'Nothing owed this month 👌','مفيش حصص جاية. ضيف من تبويب الحصص.':'No upcoming sessions. Add from the Sessions tab.','ميعاد':'class times','فيه':'There are',
+'طالب جديد مستني':'new student waiting for','طلاب جداد مستنيين':'new students waiting for','تحديد ميعاد الحصة والسعر.':'a class time and price.','افتح':'Open','🔔 فيه':'🔔 There are',
+'مفيش طلاب جداد':'No new students','دوس على اسم الطالب عشان تحدد ميعاد الحصة وسعرها.':'Tap a student to set their class time and price.','إغلاق':'Close','إلغاء':'Cancel',
+'تسجيل':'Register','ولي الأمر':'Parent','+ ميعاد جديد':'+ New class time','الأيام':'Days','سعر الحصة (جنيه)':'Session price (EGP)','اختار يوم واحد على الأقل والساعة.':'Choose at least one day and the time.',
+'تسجيل الطالب':'Register student','اتسجل':'Registered','واتعمل':'and created','حصة جاية':'upcoming session(s)',
+'تعديل بيانات الطالب':'Edit student','كود الطالب':'Student code','كود جديد':'New code','ملاحظات':'Notes','الطالب لسه بيحضر':'Student still attending','اختار الصف.':'Choose a grade.',
+'اختار ميعاد موجود، أو حدد أيام وساعة الميعاد الجديد.':'Pick an existing class time, or set days and time for a new one.','اتحفظت التعديلات':'Changes saved','اتضاف الطالب':'Student added',
+'اتحذف الطالب':'Student deleted','هيتمسح حضوره ودرجاته ومدفوعاته كمان.':'Their attendance, grades and payments will be deleted too.','حذف الحصة دي وحضورها؟':'Delete this session and its attendance?',
+'حذف الامتحان ودرجاته؟':'Delete this exam and its grades?','الكود ده مستخدم قبل كده، غيّره.':'This code is already used, change it.','حصل خطأ:':'Error:','مقدرتش أحمّل البيانات:':'Could not load data:',
+'أهلاً، ده كود متابعة':'Hello, this is the follow-up code for','تقدر تشوف الحضور والدرجات والحساب من هنا:':'You can see attendance, grades and payments here:','✓ الحضور':'✓ Attendance',
+'الصف الأول الابتدائي':'Grade 1 (Primary)','الصف الثاني الابتدائي':'Grade 2 (Primary)','الصف الثالث الابتدائي':'Grade 3 (Primary)','الصف الرابع الابتدائي':'Grade 4 (Primary)','الصف الخامس الابتدائي':'Grade 5 (Primary)','الصف السادس الابتدائي':'Grade 6 (Primary)',
+'الصف الأول الإعدادي':'Grade 1 (Prep)','الصف الثاني الإعدادي':'Grade 2 (Prep)','الصف الثالث الإعدادي':'Grade 3 (Prep)',
+'أولى ابتدائي':'Primary 1','تانية ابتدائي':'Primary 2','تالتة ابتدائي':'Primary 3','رابعة ابتدائي':'Primary 4','خامسة ابتدائي':'Primary 5','سادسة ابتدائي':'Primary 6','أولى إعدادي':'Prep 1','تانية إعدادي':'Prep 2','تالتة إعدادي':'Prep 3',
+'السبت':'Saturday','الأحد':'Sunday','الاثنين':'Monday','الثلاثاء':'Tuesday','الأربعاء':'Wednesday','الخميس':'Thursday','الجمعة':'Friday',
+'والسبت':'& Saturday','والأحد':'& Sunday','والاثنين':'& Monday','والثلاثاء':'& Tuesday','والأربعاء':'& Wednesday','والخميس':'& Thursday','والجمعة':'& Friday','م':'PM','ص':'AM','ج':'EGP'
+};
+const RE_ESC = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const B = '\\s·،:()\\-—/«»"\'0-9+＋✓📝💵🔔';
+const DICT = Object.entries(EN).sort((a,b)=>b[0].length-a[0].length)
+  .map(([ar,en]) => [new RegExp('(^|['+B+'])'+RE_ESC(ar)+'(?=$|['+B+'.!؟?,…])','g'), en]);
+const HAS_AR = /[\u0600-\u06FF]/;
+function tr(str){
+  if(LANG!=='en' || !str || !HAS_AR.test(str)) return str;
+  let out = str;
+  for(const [re,en] of DICT){ out = out.replace(re, (m,p1)=>p1+en); if(!HAS_AR.test(out)) break; }
+  return out.replace(/؟/g,'?').replace(/،/g,',');
+}
+const ORIG = new WeakMap(), ATTRS = ['placeholder','title','aria-label'];
+function trNode(n){
+  if(n.nodeType===3){
+    if(!ORIG.has(n)) ORIG.set(n, n.nodeValue);
+    const v = tr(ORIG.get(n)); if(n.nodeValue!==v) n.nodeValue = v;
+  } else if(n.nodeType===1 && n.tagName!=='SCRIPT' && n.tagName!=='STYLE'){
+    for(const a of ATTRS) if(n.hasAttribute(a)){
+      const k = 'data-ar-'+a; if(!n.hasAttribute(k)) n.setAttribute(k, n.getAttribute(a));
+      const v = tr(n.getAttribute(k)); if(n.getAttribute(a)!==v) n.setAttribute(a, v);
+    }
+    n.childNodes.forEach(trNode);
+  }
+}
+new MutationObserver(ms => { for(const m of ms) m.addedNodes.forEach(trNode); }).observe(document.body, {childList:true, subtree:true});
+const _confirm = window.confirm.bind(window), _prompt = window.prompt.bind(window);
+const confirm = m => _confirm(tr(m)), prompt = (m,d) => _prompt(tr(m), d);
+function applyLang(){
+  document.documentElement.lang = LANG; document.documentElement.dir = LANG==='en' ? 'ltr' : 'rtl';
+  LOC = LANG==='en' ? 'en-GB' : 'ar-EG-u-nu-latn';
+  $('#langBtn').textContent = LANG==='en' ? 'ع' : 'EN';
+  document.title = LANG==='en' ? 'Mr.Michael' : 'Mr.Michael | متابعة الطلاب';
+  trNode(document.body);
+  if(!$('#t-app').hidden && D.students) renderAll();
+  if(!$('#v-parent').hidden && lastReport) renderReport(lastReport);
+}
+$('#langBtn').onclick = () => {
+  if(typeof dDirty!=='undefined' && dDirty && !confirm('فيه تعديلات ماتحفظتش، تكمّل من غير حفظ؟')) return;
+  LANG = LANG==='en' ? 'ar' : 'en';
+  try{ localStorage.setItem('ta-lang', LANG); }catch(e){}
+  if(typeof dDirty!=='undefined') dDirty = false;
+  applyLang();
+};
+
 /* ---------- التنقل ---------- */
-const TITLES = {home:'حضور، درجات، وحسابات', parent:'صفحة ولي الأمر', teacher:'لوحة المدرس', register:'تسجيل طالب جديد'};
 function go(v, code){
   ['home','parent','teacher','register'].forEach(x => $('#v-'+x).hidden = x!==v);
   $('#homeBtn').hidden = v==='home';
-  $('#subTitle').textContent = TITLES[v];
   history.replaceState(null,'', v==='home' ? location.pathname : '#'+v+(code?'='+code:''));
   if(v==='teacher') initTeacher();
   if(v==='parent' && code){ $('#codeIn').value = code; lookup(code); }
@@ -334,6 +447,7 @@ function go(v, code){
 }
 $$('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
 $('#homeBtn').onclick = () => go('home');
+$('#teacherBtn').onclick = () => go('teacher');
 
 /* ---------- النوافذ ---------- */
 const dlg = $('#dlg');
@@ -394,15 +508,15 @@ $('#regAgain').onclick = () => { regForm.reset(); $('#regMsg').textContent = '';
 /* =================== ولي الأمر =================== */
 $('#codeForm').onsubmit = e => { e.preventDefault(); lookup($('#codeIn').value); };
 async function lookup(code){
-  code = String(code||'').trim().toUpperCase(); if(!code) return;
+  code = toLatin(String(code||'')).trim().toUpperCase(); if(!code) return;
   $('#parentMsg').textContent = 'جاري البحث…'; $('#report').innerHTML = '';
-  const {data, error} = await sb.rpc('get_student_report', {p_code: code});
-  if(error){ $('#parentMsg').textContent = 'حصل خطأ في الاتصال، جرّب تاني.'; return; }
+  const {data, error} = await sb.rpc('get_student_report_guarded', {p_code: code});
+  if(error){ $('#parentMsg').textContent = /too_many/.test(error.message) ? 'محاولات كتير بأكواد غلط. استنى ربع ساعة وجرّب تاني.' : 'حصل خطأ في الاتصال، جرّب تاني.'; return; }
   if(!data){ $('#parentMsg').textContent = 'الكود ده مش موجود. اتأكد منه مع المدرس.'; return; }
   $('#parentMsg').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString(LOC,{hour:'numeric',minute:'2-digit'});
   try{ localStorage.setItem('ta-code', code); }catch(e){}
   history.replaceState(null,'','#parent='+code);
-  renderReport(data);
+  lastReport = data; renderReport(data);
 }
 function renderReport(r){
   const s = r.student;
@@ -913,7 +1027,7 @@ function stuForm(s){
   const grade = s?.grade || '';
   openDlg(s ? 'تعديل بيانات الطالب' : 'طالب جديد', `<div class="form-grid">
     <div style="grid-column:1/-1"><label class="f">اسم الطالب</label><input name="name" required value="${esc(s?.name)}"></div>
-    <div><label class="f">كود الطالب</label><div class="row" style="flex-wrap:nowrap"><input name="code" class="code" required value="${esc(s?.code || genCode())}"><button type="button" class="icon" id="regen" title="كود جديد">↻</button></div></div>
+    <div><label class="f">كود الطالب</label><div class="row" style="flex-wrap:nowrap"><input name="code" class="code" required inputmode="numeric" value="${esc(s?.code || genCode())}"><button type="button" class="icon" id="regen" title="كود جديد">↻</button></div></div>
     <div><label class="f">الصف الدراسي</label><select name="grade" required><option value="">اختار الصف</option>${[...GRADES, ...(grade && !GRADES.includes(grade) ? [grade] : [])].map(g=>`<option ${g===grade?'selected':''}>${esc(g)}</option>`).join('')}</select></div>
     <div><label class="f">اسم ولي الأمر</label><input name="parent_name" value="${esc(s?.parent_name)}"></div>
     <div><label class="f">موبايل ولي الأمر</label><input name="parent_phone" type="tel" value="${esc(s?.parent_phone)}" placeholder="01xxxxxxxxx"></div>
@@ -926,7 +1040,7 @@ function stuForm(s){
     const gr = f.get('grade'), g = readGroup(form, gr);
     if(!gr){ $('#sfMsg').textContent = 'اختار الصف.'; return false; }
     if(!g){ $('#sfMsg').textContent = 'اختار ميعاد موجود، أو حدد أيام وساعة الميعاد الجديد.'; return false; }
-    const obj = {name:f.get('name').trim(), code:f.get('code').trim().toUpperCase(), grade:gr, parent_name:f.get('parent_name').trim()||null, parent_phone:f.get('parent_phone').trim()||null, student_phone:f.get('student_phone').trim()||null, group_name:g.group, session_price:+f.get('session_price')||0, notes:f.get('notes').trim()||null};
+    const obj = {name:f.get('name').trim(), code:toLatin(f.get('code')).trim().toUpperCase(), grade:gr, parent_name:f.get('parent_name').trim()||null, parent_phone:f.get('parent_phone').trim()||null, student_phone:f.get('student_phone').trim()||null, group_name:g.group, session_price:+f.get('session_price')||0, notes:f.get('notes').trim()||null};
     if(s) obj.active = !!form.elements.active.checked;
     const {error} = s ? await sb.from('students').update(obj).eq('id', s.id) : await sb.from('students').insert({...obj, status:'active'});
     check(error);
@@ -947,6 +1061,7 @@ else {
   go('home');
   if(saved) $('#codeIn').value = saved;
 }
+applyLang();
 })();
 </script>
 </body>
